@@ -1,9 +1,14 @@
-var express = require('express');
-var router = express.Router();
+import * as dotenv from 'dotenv'
+import express from 'express'
+const app = express()
+const port = process.env.PORT || 3000
+const router = express.Router()
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+app.get('/', (req, res) => {
+  console.log(process.env)
+})
 
-module.exports = router;
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}!`)
+})
+export default router
