@@ -5,7 +5,6 @@ const port = process.env.PORT || 3000
 const router = express.Router()
 
 app.get('/', (req, res) => {
-  console.log(process.env)
 })
 
 app.listen(port, () => {
