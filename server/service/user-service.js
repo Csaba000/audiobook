@@ -6,3 +6,4 @@ const UserSchema = new Schema({
     emailAddress:String,
     password:String
 })
+export default UserSchema;
