@@ -2,7 +2,7 @@ import * as React from 'react';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import homeScreen from './src/screens/HomeScreen';
+import HomeScreen from './src/screens/HomeScreen';
 import MyBooksScreen from './src/screens/MyBooksScreen';
 import FavoritesScreen from './src/screens/FavoritesScreen';
 import ProfilScreen from './src/screens/ProfileScreen';
@@ -10,14 +10,15 @@ import ProfilScreen from './src/screens/ProfileScreen';
 const Tab = createBottomTabNavigator();
 
 const MyTabs = () => (
-  <Tab.Navigator
+  <Tab.Navigator 
     screenOptions={{
       headerShown: false,
-      tabBarActiveTintColor: 'green',
-      tabBarInactiveTintColor: 'red',
+      tabBarHideOnKeyboard: true,
+      tabBarActiveTintColor: 'black',
       tabBarShowLabel: false,
       tabBarStyle: [
         {
+          backgroundColor: '#AECFA4',
           display: 'flex',
         },
         null,
@@ -26,7 +27,7 @@ const MyTabs = () => (
   >
     <Tab.Screen
       name="List"
-      component={homeScreen}
+      component={HomeScreen}
       options={{
         tabBarIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} />,
       }}
@@ -63,7 +64,7 @@ const MyTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    background: 'red',
+    background: '#AECFA4',
   },
 };
 
