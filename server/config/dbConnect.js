@@ -6,6 +6,7 @@ import express from 'express'
 const user = process.env.MONGODB_USER;
 const password = process.env.MONGODB_PASSWORD;
 const connectionString= process.env.MONGODB_CONNECTION_STRING;
+console.log(connectionString)
 const connectDB = async () => {
     try {
         await mongoose.connect(`mongodb+srv://${user}:${password}${connectionString}`, {
@@ -19,6 +20,3 @@ const connectDB = async () => {
     }
 };
 export default connectDB
-
-
-
