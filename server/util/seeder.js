@@ -1,6 +1,6 @@
 import connectDB from "../config/dbConnect.js";
 import { faker } from "@faker-js/faker";
-import bookSchema from "../models/book-model.js";
+import bookSchema from "../models/book.model.js";
 
 async function createRandomBooks() {
   await connectDB();
