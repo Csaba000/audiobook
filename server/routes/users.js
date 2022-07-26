@@ -1,4 +1,5 @@
 import express from 'express'
+import User from '../controllers/user-controller.js';
 
 const router = express.Router()
 
@@ -7,9 +8,8 @@ import userController from '../controllers/user-controller.js'
 import userSchema from '../service/user-service.js'
 
 
-/* GET users listing. */
-router.get('/', function (req, res, next) {
-  res.send('respond with a resource')
-})
+route.post('/auth', User.auth);
+
+route.post('/register', User.register);
 
 export default router

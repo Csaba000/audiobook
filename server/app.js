@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser'
 import logger from 'morgan'
 
 import indexRouter from './routes/index.js'
-import usersRouter from './routes/users.js'
+//import usersRouter from './routes/users.js'
 
 const app = express()
 
@@ -13,7 +13,7 @@ app.use(json())
 app.use(urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use('/', indexRouter)
-app.use('/users', usersRouter)
+//app.use('/users', usersRouter)
 app.use(function (req, res, next) {
   next(createError(404))
 })

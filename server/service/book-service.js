@@ -1,7 +1,6 @@
-import connectDB from '../config/dbConnect.js';
 import mongoose from 'mongoose';
 
-connectDB();
+
 const { Schema } = mongoose;
 const AudioBookSchema = new Schema({
     coverUrl:String,
@@ -10,7 +9,7 @@ const AudioBookSchema = new Schema({
     description:String,
     lengthInSeconds:Number
 })
-const bookSchema = mongoose.model('profile', AudioBookSchema);
+const bookSchema = mongoose.model('Audio_Book', AudioBookSchema);
 
 
 export default bookSchema
