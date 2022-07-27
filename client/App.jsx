@@ -1,16 +1,23 @@
 import * as React from 'react';
-import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import 'react-native-gesture-handler';
+import { useColorScheme } from 'react-native';
+import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from './src/screens/HomeScreen';
 import MyBooksScreen from './src/screens/MyBooksScreen';
 import FavoritesScreen from './src/screens/FavoritesScreen';
 import ProfilScreen from './src/screens/ProfileScreen';
+import SignUpScreen from './src/screens/SignUpScreen';
+import SignInScreen from './src/screens/SingInScreen';
+import COLORS from './src/constants/colors';
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 const MyTabs = () => (
-  <Tab.Navigator 
+  <Tab.Navigator
     screenOptions={{
       headerShown: false,
       tabBarHideOnKeyboard: true,
@@ -26,7 +33,7 @@ const MyTabs = () => (
     }}
   >
     <Tab.Screen
-      name="List"
+      name="Home"
       component={HomeScreen}
       options={{
         tabBarIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} />,
@@ -49,7 +56,7 @@ const MyTabs = () => (
       }}
     />
     <Tab.Screen
-      name="Profil"
+      name="Profile"
       component={ProfilScreen}
       options={{
         tabBarIcon: ({ color, size }) => (
@@ -61,17 +68,31 @@ const MyTabs = () => (
 );
 
 const MyTheme = {
-  ...DefaultTheme,
+  dark: true,
+  text: COLORS.white,
   colors: {
     ...DefaultTheme.colors,
-    background: '#AECFA4',
   },
 };
 
-const App = () => (
-  <NavigationContainer theme={MyTheme}>
-    <MyTabs />
-  </NavigationContainer>
-);
+const App = () => {
+  const isLoggedIn = true;
+
+  return (
+    <NavigationContainer>
+      {isLoggedIn ? (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <>
+            <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+
+            <Stack.Screen name="SignInScreen" component={SignInScreen} />
+          </>
+        </Stack.Navigator>
+      ) : (
+        <MyTabs />
+      )}
+    </NavigationContainer>
+  );
+};
 
 export default App;
