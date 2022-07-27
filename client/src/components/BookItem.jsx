@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -8,35 +8,54 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-export const BookItem = ({ title, description, logo, author }) => (
-    <TouchableNativeFeedback
-        onPress={() => {
-            alert(title);
-        }}
-    >
-        <View style={styles.item}>
-            <Image style={{ width: 100, height: 100, borderRadius: 100 }} source={{ uri: logo }} />
-            <View style={{ flexDirection: 'column', flexShrink: 1 }}>
-                <Text style={styles.title} numberOfLines={1}>
-                    {title}
-                </Text>
-                <Ionicons
-                    style={{ alignSelf: 'flex-end', marginTop: -5, position: 'absolute' }}
-                    name="heart-outline"
-                    size={28}
-                    color="white"
-                    onPress={() => { { alert('Added to favorites') } }}
-                />
-                <Text style={styles.author}>{author}</Text>
-                <View style={{ flexDirection: 'row' }}>
-                    <Text numberOfLines={2} style={styles.description}>
-                        {description}
+
+export const BookItem = ({ title, description, logo, author, navigation, duration }) => {
+
+    const [iconName, setIconName] = useState('heart-outline');
+
+    return (
+        <TouchableNativeFeedback
+            onPress={() => {
+                navigation.navigate('DetailedBook', { title: title, description: description, logo: logo, author: author, duration: duration })
+            }}
+        >
+            <View style={styles.item}>
+                <Image style={styles.logoImage} source={{ uri: logo }} />
+                <View style={styles.viewContainer}>
+                    <Text style={styles.title} numberOfLines={1}>
+                        {title}
                     </Text>
+                    <Ionicons
+                        style={styles.favoriteIcon}
+                        name={iconName}
+                        size={28}
+                        color="white"
+                        onPress={() => {
+                            if (iconName == 'heart-outline') {
+                                setIconName('heart-sharp')
+                            }
+                            if (iconName == 'heart-sharp') {
+                                setIconName('heart-outline')
+                            }
+                        }}
+                    />
+                    <Text style={styles.author}>{author}</Text>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text numberOfLines={2} style={styles.description}>
+                            {description}
+                        </Text>
+                    </View>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text numberOfLines={2} style={styles.durationText}>Duration:
+                            {duration}
+                        </Text>
+                    </View>
                 </View>
             </View>
-        </View>
-    </TouchableNativeFeedback>
-);
+        </TouchableNativeFeedback>
+
+    )
+};
 
 
 const styles = StyleSheet.create({
@@ -47,7 +66,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.5,
         flexDirection: 'row',
         borderRadius: 10,
-        backgroundColor: '#555555',
+        backgroundColor: '#569479',
         padding: 20,
         marginVertical: 8,
         marginHorizontal: 16,
@@ -70,4 +89,24 @@ const styles = StyleSheet.create({
         fontSize: 12.3,
         flexShrink: 1,
     },
+    logoImage: {
+        width: 100,
+        height: 100,
+        borderRadius: 100
+    },
+    viewContainer: {
+        flexDirection: 'column',
+        flexShrink: 1
+    },
+    favoriteIcon: {
+        alignSelf: 'flex-end',
+        marginTop: -5,
+        position: 'absolute'
+    },
+    durationText: {
+        fontSize: 10,
+        color: 'white',
+        flexShrink: 1,
+        paddingLeft: 10
+    }
 });
