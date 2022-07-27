@@ -43,7 +43,7 @@ const dimension = Dimensions.get('screen').width;
 const styles = StyleSheet.create({
   headerContainer: {
     elevation: 10,
-    height: 55,
+    height: 100,
     flex: 1,
     backgroundColor: '#AECFA4',
     borderBottomStartRadius: 10,
@@ -53,26 +53,39 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   textField: {
-    left: 90,
-    width: '35%',
+    left: dimension/4.85,
+    width: '57%',
     backgroundColor: 'white',
     borderRadius: 10,
     textAlign: 'left',
     height: 30,
+    bottom: 20,
+    position: 'absolute',
     paddingLeft: 10,
   },
   logo: {
+    left: dimension/22,
+    bottom: 20,
+    position: 'absolute',
     width: 35,
     height: 35,
-    right: dimension / 2,
+    // right: dimension / 2,
   },
   buyMeACoffe: {
-    left: dimension / 14,
+    // bottom: 0,
+    bottom: -70,
+    left: dimension/4, 
+    position: 'absolute',
+
+    // left: dimension / 14,
     width: 110,
     height: 110,
   },
   searchIcon: {
-    left: 105,
+    left: dimension/6.7,
+    bottom: 23,
+    position: 'absolute',
+    // left: 105,
     color: 'white',
   },
 });

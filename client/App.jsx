@@ -12,9 +12,19 @@ import ProfilScreen from './src/screens/ProfileScreen';
 import SignUpScreen from './src/screens/SignUpScreen';
 import SignInScreen from './src/screens/SingInScreen';
 import COLORS from './src/constants/colors';
+import DetailedBook from './src/screens/DetailedBook';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
+const HomeNavigator = () => (
+  <Stack.Navigator screenOptions = {{headerShown: false}} >
+    <>
+      <Stack.Screen name="HomeScreen" component={HomeScreen} />
+      <Stack.Screen name="DetailedBook" component={DetailedBook}options= {{headerShown: true, headerStyle:{backgroundColor:'#AECFA4'}}} />
+    </>
+  </Stack.Navigator>
+);
 
 const MyTabs = () => (
   <Tab.Navigator
@@ -34,7 +44,7 @@ const MyTabs = () => (
   >
     <Tab.Screen
       name="Home"
-      component={HomeScreen}
+      component={HomeNavigator}
       options={{
         tabBarIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} />,
       }}
@@ -70,6 +80,7 @@ const MyTabs = () => (
 const MyTheme = {
   dark: true,
   text: COLORS.white,
+  background: 'black',
   colors: {
     ...DefaultTheme.colors,
   },
@@ -80,11 +91,10 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      {isLoggedIn ? (
+      {!isLoggedIn ? (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <>
             <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
-
             <Stack.Screen name="SignInScreen" component={SignInScreen} />
           </>
         </Stack.Navigator>
