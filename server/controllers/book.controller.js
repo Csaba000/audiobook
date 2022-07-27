@@ -1,12 +1,21 @@
-import bookSchema from "../models/book.model.js";
+import {
+  listBooks,
+  listBooksbyId,
+  listBooksbyTitle,
+} from "../service/book.service.js";
 
-async function listBooks(request, response) {
-  bookSchema.find({}, (err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      response.json(result);
-    }
-  });
+async function bookLister(request, response) {
+  if (!request.query.title) {
+    const book = await listBooks();
+    response.json(book);
+  } else {
+    const book = await listBooksbyTitle(request.query.title);
+    response.json(book);
+  }
 }
-export {listBooks}
+async function bookListerById(request, response) {
+  const book = await listBooksbyId(request.params.id);
+  response.json(book);
+}
+
+export { bookLister, bookListerById };
