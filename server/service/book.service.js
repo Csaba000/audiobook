@@ -6,8 +6,8 @@ async function listBooks(request, response) {
 async function listBooksbyId(id) {
   return bookSchema.findById(id);
 }
-async function listBooksbyTitle(_title) {
-  return bookSchema.find({ title: _title });
+async function listBooksbyTitle(title) {
+  return bookSchema.find({ title: title });
 }
 
 export { listBooks, listBooksbyId, listBooksbyTitle };
