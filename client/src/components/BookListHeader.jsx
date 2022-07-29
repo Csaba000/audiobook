@@ -28,10 +28,7 @@ export const BookListHeader = () => {
       <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
       <View>
         <TouchableOpacity onPress={() => Linking.openURL('https://bit.ly/3Bcr48o')}>
-          <Image
-            source={require('../../assets/images/buymeacoffe.png')}
-            style={styles.buyMeACoffe}
-          />
+          <Ionicons name='filter-sharp' style={styles.buyMeACoffe} color={'white'} size={28} />
         </TouchableOpacity>
       </View>
     </View>
@@ -45,7 +42,7 @@ const styles = StyleSheet.create({
     elevation: 10,
     height: 100,
     flex: 1,
-    backgroundColor: '#AECFA4',
+    backgroundColor: '#23042F',
     borderBottomStartRadius: 10,
     borderBottomEndRadius: 10,
     flexDirection: 'row',
@@ -53,8 +50,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   textField: {
-    left: dimension/4.85,
-    width: '57%',
+    left: dimension / 4.85,
+    width: '65%',
     backgroundColor: 'white',
     borderRadius: 10,
     textAlign: 'left',
@@ -64,28 +61,22 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   logo: {
-    left: dimension/22,
+    left: dimension / 22,
     bottom: 20,
     position: 'absolute',
     width: 35,
     height: 35,
-    // right: dimension / 2,
+
   },
   buyMeACoffe: {
-    // bottom: 0,
-    bottom: -70,
-    left: dimension/4, 
+    bottom: -30,
+    left: dimension / 2.6,
     position: 'absolute',
-
-    // left: dimension / 14,
-    width: 110,
-    height: 110,
   },
   searchIcon: {
-    left: dimension/6.7,
+    left: dimension / 6.7,
     bottom: 23,
     position: 'absolute',
-    // left: 105,
     color: 'white',
   },
 });

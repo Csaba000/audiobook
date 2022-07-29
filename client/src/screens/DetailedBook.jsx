@@ -2,31 +2,47 @@ import { useRoute } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { BACKEND_URL } from '../utils/constants';
 
+const headers = {
+  headers: {
+    "Content-Type": "application/json"
+  }
+}
 
 const DetailedBook = () => {
   const route = useRoute();
 
-  const { title, description, author, logo, duration } = route.params;
+  const { id } = route.params;
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    axios.get(`${BACKEND_URL}/books/${id}`, headers)
+      .then(({ data }) => {
+        setData(data)
+      }).catch((error) => console.error(error))
+  }, []);
 
   return (
 
     <LinearGradient
-      colors={['#6BBD99', '#284538']}
+      colors={['#866B90', '#2101']}
       style={styles.container}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}>
-
-
       <ScrollView >
         <View style={styles.scrollableView}>
-          <Image style={styles.logoImage} source={{ uri: logo }}></Image>
-          <Text style={styles.titleText}>{title}</Text>
-          <Text style={styles.authorText}>- {author} -</Text>
-          <Text style={styles.descriptionText}>{description}{description}{description}{description}{description}{description}{description}</Text>
+          <Image style={styles.logoImage} source={{ uri: data.coverUrl }}></Image>
+          <Text style={styles.titleText}>{data.title}</Text>
+          <Text style={styles.authorText}>- {data.author} -</Text>
+          <Text style={styles.descriptionText}>{data.description}{data.description}{data.description}{data.description}{data.description}{data.description}{data.description}</Text>
           <View style={styles.bottomView}>
-            <Text style={styles.durationText}>Duration: {duration}</Text>
-            <Ionicons name="download" color={'white'} size={35} style={styles.downloadIcon} onPress={() => { alert("Downloading") }} />
+            <Text style={styles.durationText}>Duration: {data.lengthInSeconds}s</Text>
+            <Ionicons name="download" color={'white'} size={35} style={styles.downloadIcon}
+              onPress={() => { alert("Downloading") }} />
           </View>
         </View>
       </ScrollView>
@@ -34,8 +50,6 @@ const DetailedBook = () => {
   );
 
 };
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -57,7 +71,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoImage: {
-    
+
     borderWidth: 2,
     borderColor: 'white',
     borderRadius: 10,

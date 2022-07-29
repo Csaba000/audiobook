@@ -8,19 +8,18 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-
-export const BookItem = ({ title, description, logo, author, navigation, duration }) => {
+export const BookItem = ({ title, description, coverUrl, author, navigation, lengthInSeconds, id }) => {
 
     const [iconName, setIconName] = useState('heart-outline');
 
     return (
         <TouchableNativeFeedback
             onPress={() => {
-                navigation.navigate('DetailedBook', { title: title, description: description, logo: logo, author: author, duration: duration })
+                navigation.navigate('DetailedBook', { id: id })
             }}
         >
             <View style={styles.item}>
-                <Image style={styles.logoImage} source={{ uri: logo }} />
+                <Image style={styles.logoImage} source={{ uri: coverUrl }} />
                 <View style={styles.viewContainer}>
                     <Text style={styles.title} numberOfLines={1}>
                         {title}
@@ -46,8 +45,7 @@ export const BookItem = ({ title, description, logo, author, navigation, duratio
                         </Text>
                     </View>
                     <View style={{ flexDirection: 'row' }}>
-                        <Text numberOfLines={2} style={styles.durationText}>Duration:
-                            {duration}
+                        <Text numberOfLines={2} style={styles.durationText}>Duration: {lengthInSeconds}s
                         </Text>
                     </View>
                 </View>
@@ -66,13 +64,14 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.5,
         flexDirection: 'row',
         borderRadius: 10,
-        backgroundColor: '#569479',
+        backgroundColor: '#62466D',
         padding: 20,
         marginVertical: 8,
         marginHorizontal: 16,
         top: 8,
     },
     title: {
+        marginRight: 25,
         color: 'white',
         paddingLeft: 8,
         fontSize: 17,
