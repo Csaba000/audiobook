@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { TouchableNativeFeedback } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,22 +10,51 @@ import FavoritesScreen from './FavoritesScreen';
 import ProfilScreen from './ProfileScreen';
 import SignInScreen from './SingInScreen';
 import SignUpScreen from './SignUpScreen';
+import DetailedBook from './DetailedBook';
 import { LoginContext } from '../components/IsLoggedIn';
-import COLORS from '../constants/colors';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
+const HomeNavigator = ({ navigation }) => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <>
+        <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen
+          name="DetailedBook"
+          component={DetailedBook}
+          options={{
+            headerLeft: () => (
+              <TouchableNativeFeedback
+                onPress={() => {
+                  navigation.navigate('HomeScreen');
+                }}
+              >
+                <Ionicons name="arrow-back" size={32} style={{ padding: 10 }} color={'white'} />
+              </TouchableNativeFeedback>
+            ),
+            headerShown: true,
+            title: 'Back',
+            headerStyle: { backgroundColor: '#23042F' },
+          }}
+        />
+      </>
+    </Stack.Navigator>
+  );
+};
 
 const MyTabs = () => (
   <Tab.Navigator
     screenOptions={{
       headerShown: false,
       tabBarHideOnKeyboard: true,
-      tabBarActiveTintColor: 'black',
+      tabBarInactiveTintColor: '#62466D',
+      tabBarActiveTintColor: 'white',
       tabBarShowLabel: false,
       tabBarStyle: [
         {
-          backgroundColor: '#AECFA4',
+          backgroundColor: '#23042F',
           display: 'flex',
         },
         null,
@@ -33,7 +63,7 @@ const MyTabs = () => (
   >
     <Tab.Screen
       name="Home"
-      component={HomeScreen}
+      component={HomeNavigator}
       options={{
         tabBarIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} />,
       }}
@@ -70,7 +100,7 @@ export const Nav = () => {
   const { isLoggedIn, setIsLoggedIn } = React.useContext(LoginContext);
 
   return (
-    <NavigationContainer theme={{ colors: { background: COLORS.tabbar } }}>
+    <NavigationContainer theme={DarkTheme}>
       {isLoggedIn ? (
         <MyTabs />
       ) : (
