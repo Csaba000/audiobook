@@ -1,14 +1,12 @@
-import React, { Component } from 'react';
+import React, { useContext } from 'react';
 import {
   StyleSheet,
   View,
   Image,
   Text,
-  TextInput,
   SafeAreaView,
   Keyboard,
   Alert,
-  Button,
   ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -17,8 +15,11 @@ import Input from '../components/Input';
 import COLORS from '../constants/colors';
 import Loader from '../components/Loader';
 import ModifiedButton from '../components/ModifiedButton';
+import { LoginContext } from '../components/IsLoggedIn';
 
 const SignInScreen = ({ navigation }) => {
+  const { setIsLoggedIn } = useContext(LoginContext);
+
   const [inputs, setInputs] = React.useState({ email: '', password: '' });
   const [errors, setErrors] = React.useState({});
   const [loading, setLoading] = React.useState(false);
@@ -35,7 +36,8 @@ const SignInScreen = ({ navigation }) => {
       isValid = false;
     }
     if (isValid) {
-      login();
+      setIsLoggedIn(true);
+      //login();
     }
   };
 
@@ -67,10 +69,10 @@ const SignInScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={{ backgroundColor: COLORS.darkGray, flex: 1 }}>
+    <SafeAreaView style={{ backgroundColor: COLORS.tabbar, flex: 1 }}>
       <Loader visible={loading} />
       <View style={styles.container}>
-        <Image source={require('../assets/logo1.png')} resizeMode="contain" style={styles.image} />
+        <Image source={require('../assets/logo2.png')} resizeMode="contain" style={styles.image} />
         <View style={styles.rect}>
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={styles.rectInside}>
@@ -140,6 +142,7 @@ const SignInScreen = ({ navigation }) => {
             style={styles.registerIcons}
             onPress={() => {
               {
+                setLoggedIn(false);
                 alert('Working on it!');
               }
             }}
@@ -153,12 +156,12 @@ const SignInScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-evenly',
+    justifyContent: 'center',
   },
   rect: {
     width: 330,
     height: 400,
-    backgroundColor: COLORS.lighterdarkGray,
+    backgroundColor: COLORS.background,
     shadowColor: 'rgba(0,0,0,1)',
     shadowOffset: {
       width: 0,
@@ -181,8 +184,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
   },
   image: {
-    width: 80,
-    height: 80,
+    width: 120,
+    height: 120,
     top: 30,
     margin: 15,
     padding: 10,

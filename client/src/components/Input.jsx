@@ -12,12 +12,12 @@ const Input = ({ label, iconName, error, password, onFocus = () => {}, ...props 
         style={[
           style.inputContainer,
           {
-            borderColor: error ? COLORS.red : isFocused ? COLORS.darkBlue : 'transparent',
+            borderColor: error ? COLORS.red : isFocused ? COLORS.box : 'transparent',
             alignItems: 'center',
           },
         ]}
       >
-        <Icon name={iconName} style={{ color: COLORS.darkBlue, fontSize: 22, marginRight: 10 }} />
+        <Icon name={iconName} style={{ color: COLORS.box, fontSize: 22, marginRight: 10 }} />
         <TextInput
           autoCorrect={false}
           onFocus={() => {
@@ -34,7 +34,7 @@ const Input = ({ label, iconName, error, password, onFocus = () => {}, ...props 
           <Icon
             onPress={() => setHidePassword(!hidePassword)}
             name={hidePassword ? 'eye-outline' : 'eye-off-outline'}
-            style={{ color: COLORS.darkBlue, fontSize: 22 }}
+            style={{ color: COLORS.box, fontSize: 22 }}
           />
         )}
       </View>
@@ -52,7 +52,7 @@ const style = StyleSheet.create({
   inputContainer: {
     color: COLORS.white,
     height: 55,
-    backgroundColor: COLORS.textfieldgray,
+    backgroundColor: COLORS.inputBackground,
     flexDirection: 'row',
     paddingHorizontal: 15,
     borderWidth: 0.5,

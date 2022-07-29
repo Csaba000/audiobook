@@ -1,16 +1,13 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {
   StyleSheet,
   View,
   Image,
   Text,
-  TextInput,
   SafeAreaView,
   Keyboard,
   Alert,
-  Button,
   ScrollView,
-  KeyboardAvoidingView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -87,10 +84,10 @@ const SignUpScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={{ backgroundColor: COLORS.darkGray, flex: 1 }}>
+    <SafeAreaView style={{ backgroundColor: COLORS.tabbar, flex: 1 }}>
       <Loader visible={loading} />
       <View style={styles.container}>
-        <Image source={require('../assets/logo1.png')} resizeMode="contain" style={styles.image} />
+        <Image source={require('../assets/logo2.png')} resizeMode="contain" style={styles.image} />
 
         <View style={styles.rect}>
           <ScrollView showsVerticalScrollIndicator={false}>
@@ -103,14 +100,6 @@ const SignUpScreen = ({ navigation }) => {
                 label="Email"
                 placeholder="Enter your email address"
                 error={errors.email}
-              />
-              <Input
-                onChangeText={(text) => handleOnchange(text, 'username')}
-                onFocus={() => handleError(null, 'username')}
-                iconName="account-outline"
-                label="Username"
-                placeholder="Enter your username"
-                error={errors.username}
               />
               <Input
                 onChangeText={(text) => handleOnchange(text, 'password')}
@@ -126,8 +115,8 @@ const SignUpScreen = ({ navigation }) => {
                 onChangeText={(text) => handleOnchange(text, 'cpassword')}
                 onFocus={() => handleError(null, 'cpassword')}
                 iconName="lock-outline"
-                label="Comfirm Password"
-                placeholder="Comfirm your password"
+                label="Confirm Password"
+                placeholder="Confirm your password"
                 error={errors.cpassword}
                 password
               />
@@ -185,12 +174,13 @@ const SignUpScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 2,
+    flex: 1,
+    justifyContent: 'center',
   },
   rect: {
     width: 330,
-    height: 550,
-    backgroundColor: COLORS.lighterdarkGray,
+    height: 450,
+    backgroundColor: COLORS.background,
     shadowColor: 'rgba(0,0,0,1)',
     shadowOffset: {
       width: 0,
@@ -214,8 +204,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
   },
   image: {
-    width: 80,
-    height: 80,
+    width: 120,
+    height: 120,
     top: 30,
     margin: 15,
     padding: 10,

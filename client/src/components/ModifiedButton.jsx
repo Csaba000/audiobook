@@ -1,6 +1,5 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { style } from 'styled-system';
 import COLORS from '../constants/colors';
 const ModifiedButton = ({ title, onPress = () => {} }) => {
   return (
@@ -14,7 +13,7 @@ const styles = StyleSheet.create({
   button: {
     height: 55,
     width: '100%',
-    backgroundColor: COLORS.blue,
+    backgroundColor: COLORS.box,
     marginVertical: 20,
     justifyContent: 'center',
     alignItems: 'center',
