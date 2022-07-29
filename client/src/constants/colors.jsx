@@ -11,5 +11,13 @@ const COLORS = {
   textfieldgray: '#232227',
   buttonbluish: '#5d60ef',
   textwhitish: '#fefefe',
+  //screen themes
+  background: '#391b45',
+  tabbar: '#23042f',
+  box: '#62466d',
+  gradientGreen: '#2101',
+  gradientPurple: '#866b90',
+  inputBackground: '#280536',
+  logRegBG: '#08010a',
 };
 export default COLORS;
