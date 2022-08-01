@@ -1,18 +1,24 @@
 import userSchema from "../models/user.model.js";
+import * as userService from "../service/user.service.js";
 
-const createUser = async (request, response) => {
-  await userSchema.create({
-    userName: request.body.userName,
-    emailAddress: request.body.emailAddress,
-    password: request.body.password,
-  });
+async function userListerById(request, response) {
+  const book = await userService.listUsersbyId(request.params.id);
+  response.json(book);
 }
 
-const login = async (request, response) => {
-  console.log("TODO: Implement login")
+async function register(request, response) {
+  const newUser = await userService.register(
+    request.body.email,
+    request.body.password,
+  );
+  response.json(newUser);
+}
+async function login(request, response) {
+  const token = await userService.login(
+    request.body.email,
+    request.body.password
+  );
+  response.status(200).json({ access_token: token });
 }
 
-export {
-  createUser,
-  login,
-}
+export { register, login, userListerById };
