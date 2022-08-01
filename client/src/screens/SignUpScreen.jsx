@@ -15,6 +15,8 @@ import Input from '../components/Input';
 import COLORS from '../constants/colors';
 import Loader from '../components/Loader';
 import ModifiedButton from '../components/ModifiedButton';
+import axios from 'axios';
+import { BACKEND_URL } from '../utils/constants';
 
 const SignUpScreen = ({ navigation }) => {
   const [inputs, setInputs] = React.useState({
@@ -58,6 +60,13 @@ const SignUpScreen = ({ navigation }) => {
       handleError('Passwoad and confirm password should be same.', 'cpassword');
       isValid = false;
     }
+    if ((inputs.password == inputs.cpassword) && (inputs.cpassword) &&
+      (inputs.email) && (inputs.email.match(/\S+@\S+\.\S+/))
+      && (inputs.password) && (inputs.password.length >= 5)) {
+      isValid = true;
+    }
+    console.log(isValid)
+    
     if (isValid) {
       register();
     }
@@ -70,12 +79,20 @@ const SignUpScreen = ({ navigation }) => {
     setErrors((prevState) => ({ ...prevState, [input]: error }));
   };
 
+  const sendData = () => {
+    console.log(BACKEND_URL);
+    axios.post(`${BACKEND_URL}/users/register`, { email: inputs.email, password: inputs.password })
+      .then(response => console.log(response)).catch(function (error) { console.log(error) });
+  }
+
   const register = () => {
+    console.log('register');
     setLoading(true);
     setTimeout(() => {
       try {
         setLoading(false);
         AsyncStorage.setItem('userData', JSON.stringify(inputs));
+        sendData();
         navigation.navigate('SignInScreen');
       } catch (error) {
         Alert.alert('Error', 'Something went wrong');
@@ -121,7 +138,7 @@ const SignUpScreen = ({ navigation }) => {
                 password
               />
 
-              <ModifiedButton title="Register" onPress={validate} />
+              <ModifiedButton title="Register" onPress={() => validate()} />
               <Text
                 style={{
                   color: COLORS.white,
