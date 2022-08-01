@@ -9,5 +9,11 @@ async function listBooksbyId(id) {
 async function listBooksbyTitle(title) {
   return bookSchema.find({ title });
 }
+async function setBookCover(title){
+
+
+  
+}
+
 
 export { listBooks, listBooksbyId, listBooksbyTitle };
