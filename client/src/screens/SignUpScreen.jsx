@@ -66,7 +66,7 @@ const SignUpScreen = ({ navigation }) => {
       isValid = true;
     }
     console.log(isValid)
-    
+
     if (isValid) {
       register();
     }

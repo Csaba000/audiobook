@@ -18,6 +18,8 @@ import ModifiedButton from '../components/ModifiedButton';
 import { LoginContext } from '../components/IsLoggedIn';
 import { BACKEND_URL } from '../utils/constants';
 import axios from 'axios';
+import HomeScreen from './HomeScreen';
+import { StackActions } from '@react-navigation/native';
 
 const SignInScreen = ({ navigation }) => {
   const { setIsLoggedIn } = useContext(LoginContext);
@@ -42,7 +44,7 @@ const SignInScreen = ({ navigation }) => {
       isValid = false;
     }
     if (isValid) {
-      setIsLoggedIn(true);
+      // setIsLoggedIn(true);
       login();
     }
   };
@@ -50,7 +52,9 @@ const SignInScreen = ({ navigation }) => {
   const sendData = () => {
     console.log(BACKEND_URL);
     axios.post(`${BACKEND_URL}/users/login`, { email: inputs.email, password: inputs.password })
-      .then(response => console.log(response.data)).
+      .then(async (response) => {
+        await AsyncStorage.setItem('token', JSON.stringify(response.data))
+      }).
       catch(function (error) { console.log(error) });
   }
 
@@ -63,26 +67,21 @@ const SignInScreen = ({ navigation }) => {
   };
 
   const login = () => {
-    console.log(data)
     sendData();
     setLoading(true);
     setTimeout(async () => {
       setLoading(false);
+      let token = await AsyncStorage.getItem('token');
+      console.log("Token1: ", token);
       let userData = await AsyncStorage.getItem('userData');
-      // console.log(userData);
-      if (userData) {
-        userData = JSON.parse(userData);
-        if (inputs.email == userData.email && inputs.password == userData.password) {
-          // navigation.navigate('HomeScreen');
-          AsyncStorage.setItem('userData', JSON.stringify({ ...userData, loggedIn: true }));
-        } else {
-          Alert.alert('Error', 'Invalid Details');
-          // navigation.navigate('SignUpScreen');
-        }
+
+      if (token != '{}') {
+        AsyncStorage.setItem('userData', JSON.stringify({ ...userData, loggedIn: true }));
+        setIsLoggedIn(true);
       } else {
-        Alert.alert('Error', 'User does not exist');
+        Alert.alert('Error', 'Invalid Details');
       }
-    }, 3000);
+    }, 1000);
   };
 
   return (
@@ -116,7 +115,7 @@ const SignInScreen = ({ navigation }) => {
                 password
               />
 
-              <ModifiedButton title="Log In" onPress={() => {validate()}} />
+              <ModifiedButton title="Log In" onPress={() => { validate() }} />
 
               <Text
                 style={{

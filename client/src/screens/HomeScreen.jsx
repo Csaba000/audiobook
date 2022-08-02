@@ -10,10 +10,19 @@ import { BookItem } from '../components/BookItem';
 import { BookListHeader } from '../components/BookListHeader';
 import axios from 'axios';
 import { BACKEND_URL } from '../utils/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export async function getToken() {
+  let token = await AsyncStorage.getItem('token')
+  let obj = JSON.parse(token);
+  let tokenValue = obj.access_token;
+  return tokenValue;
+}
 
 const headers = {
   headers: {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    "Authorization": ''
   }
 }
 
@@ -21,14 +30,20 @@ const HomeScreen = ({ navigation }) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
 
-
-
   useEffect(() => {
-    axios.get(`${BACKEND_URL}/books`, headers)
-      .then(({ data }) => {
-        setData(data)
-      }).catch((error) => console.error(error))
-      .finally(() => setLoading(false));
+    getToken().then((token) => {
+      if (token) {
+        headers.headers.Authorization = `Bearer ${token}`
+        axios.get(`${BACKEND_URL}/books`, headers)
+          .then(({ data }) => {
+            setData(data)
+          }).catch((error) => console.error(error))
+          .finally(() => setLoading(false));
+      }
+      else {
+        console.log('Error token')
+      }
+    })
   }, []);
 
   const renderItem = ({ item }) => {

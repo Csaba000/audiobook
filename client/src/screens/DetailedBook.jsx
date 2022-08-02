@@ -5,25 +5,37 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '../utils/constants';
+import { getToken } from './HomeScreen';
 
 const headers = {
   headers: {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    "Authorization": ''
   }
 }
 
 const DetailedBook = () => {
   const route = useRoute();
+  const [isLoading, setLoading] = useState(true);
 
   const { id } = route.params;
 
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    axios.get(`${BACKEND_URL}/books/${id}`, headers)
-      .then(({ data }) => {
-        setData(data)
-      }).catch((error) => console.error(error))
+    getToken().then((token) => {
+      if (token) {
+        headers.headers.Authorization = `Bearer ${token}`
+        axios.get(`${BACKEND_URL}/books/${id}`, headers)
+          .then(({ data }) => {
+            setData(data)
+          }).catch((error) => console.error(error))
+          .finally(() => setLoading(false));
+      }
+      else {
+        console.log('Error token')
+      }
+    })
   }, []);
 
   return (
