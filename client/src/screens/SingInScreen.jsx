@@ -72,7 +72,6 @@ const SignInScreen = ({ navigation }) => {
     setTimeout(async () => {
       setLoading(false);
       let token = await AsyncStorage.getItem('token');
-      console.log("Token1: ", token);
       let userData = await AsyncStorage.getItem('userData');
 
       if (token != '{}') {
@@ -81,7 +80,7 @@ const SignInScreen = ({ navigation }) => {
       } else {
         Alert.alert('Error', 'Invalid Details');
       }
-    }, 1000);
+    }, 100);
   };
 
   return (
