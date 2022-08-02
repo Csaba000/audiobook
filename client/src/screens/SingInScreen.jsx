@@ -80,7 +80,7 @@ const SignInScreen = ({ navigation }) => {
       } else {
         Alert.alert('Error', 'Invalid Details');
       }
-    }, 100);
+    }, 3000);
   };
 
   return (
