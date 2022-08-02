@@ -82,7 +82,7 @@ const SignUpScreen = ({ navigation }) => {
   const sendData = () => {
     console.log(BACKEND_URL);
     axios.post(`${BACKEND_URL}/users/register`, { email: inputs.email, password: inputs.password })
-      .then(response => console.log(response)).catch(function (error) { console.log(error) });
+      .then(response => console.log(response)).catch(function (error) { alert('Server error: ', error) });
   }
 
   const register = () => {
@@ -91,7 +91,7 @@ const SignUpScreen = ({ navigation }) => {
     setTimeout(() => {
       try {
         setLoading(false);
-        AsyncStorage.setItem('userData', JSON.stringify(inputs));
+        // AsyncStorage.setItem('userData', JSON.stringify(inputs));
         sendData();
         navigation.navigate('SignInScreen');
       } catch (error) {

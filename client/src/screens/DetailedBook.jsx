@@ -40,8 +40,9 @@ const DetailedBook = () => {
         headers.headers.Authorization = `Bearer ${token}`
         axios.get(`${BACKEND_URL}/books/${id}`, headers)
           .then(({ data }) => {
+            console.log('setdata-DetailedBook')
             setData(data)
-          }).catch((error) => console.error(error))
+          }).catch((error) => alert('Server error'))
           .finally(() => setLoading(false));
       }
       else {

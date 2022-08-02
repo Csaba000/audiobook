@@ -36,12 +36,13 @@ const HomeScreen = ({ navigation }) => {
         headers.headers.Authorization = `Bearer ${token}`
         axios.get(`${BACKEND_URL}/books`, headers)
           .then(({ data }) => {
+            console.log('setdata-HomeScreen')
             setData(data)
-          }).catch((error) => console.error(error))
+          }).catch((error) => alert('Server error: ', error))
           .finally(() => setLoading(false));
       }
       else {
-        console.log('Error token')
+        alert('Login token is not good')
       }
     })
   }, []);

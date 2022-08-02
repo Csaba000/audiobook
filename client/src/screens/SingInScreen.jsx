@@ -55,7 +55,7 @@ const SignInScreen = ({ navigation }) => {
       .then(async (response) => {
         await AsyncStorage.setItem('token', JSON.stringify(response.data))
       }).
-      catch(function (error) { console.log(error) });
+      catch(function (error) { alert('Server error: ', error) });
   }
 
   const handleOnchange = (text, input) => {
@@ -72,10 +72,10 @@ const SignInScreen = ({ navigation }) => {
     setTimeout(async () => {
       setLoading(false);
       let token = await AsyncStorage.getItem('token');
-      let userData = await AsyncStorage.getItem('userData');
+      // let userData = await AsyncStorage.getItem('userData');
 
       if (token != '{}') {
-        AsyncStorage.setItem('userData', JSON.stringify({ ...userData, loggedIn: true }));
+        // AsyncStorage.setItem('userData', JSON.stringify({ ...userData, loggedIn: true }));
         setIsLoggedIn(true);
       } else {
         Alert.alert('Error', 'Invalid Details');
