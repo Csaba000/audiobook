@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   SafeAreaView,
   FlatList,
@@ -11,13 +11,18 @@ import { BookListHeader } from '../components/BookListHeader';
 import axios from 'axios';
 import { BACKEND_URL } from '../utils/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthContext } from '../components/AuthProvider';
 
-export async function getToken() {
-  let token = await AsyncStorage.getItem('token')
-  let obj = JSON.parse(token);
-  let tokenValue = obj.access_token;
-  return tokenValue;
-}
+
+
+// export async function getToken() {
+
+
+//   // // let token = await AsyncStorage.getItem('token')
+//   // let obj = JSON.parse(token);
+//   // let tokenValue = obj.access_token;
+//   return token
+// }
 
 const headers = {
   headers: {
@@ -29,22 +34,24 @@ const headers = {
 const HomeScreen = ({ navigation }) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
+  const { token } = useContext(AuthContext)
 
   useEffect(() => {
-    getToken().then((token) => {
-      if (token) {
-        headers.headers.Authorization = `Bearer ${token}`
-        axios.get(`${BACKEND_URL}/books`, headers)
-          .then(({ data }) => {
-            console.log('setdata-HomeScreen')
-            setData(data)
-          }).catch((error) => alert('Server error: ', error))
-          .finally(() => setLoading(false));
-      }
-      else {
-        alert('Login token is not good')
-      }
-    })
+    // getToken().then((token) => {
+    if (token) {
+      console.log(token)
+      headers.headers.Authorization = `Bearer ${token}`
+      axios.get(`${BACKEND_URL}/books`, headers)
+        .then(({ data }) => {
+          console.log('setdata-HomeScreen')
+          setData(data)
+        }).catch((error) => alert('Server error: ', error))
+        .finally(() => setLoading(false));
+    }
+    else {
+      alert('Login token is not good')
+    }
+    // })
   }, []);
 
   const renderItem = ({ item }) => {

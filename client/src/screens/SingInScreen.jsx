@@ -20,9 +20,11 @@ import { BACKEND_URL } from '../utils/constants';
 import axios from 'axios';
 import HomeScreen from './HomeScreen';
 import { StackActions } from '@react-navigation/native';
+import { AuthContext } from '../components/AuthProvider';
 
 const SignInScreen = ({ navigation }) => {
   const { setIsLoggedIn } = useContext(LoginContext);
+  const { token, setToken } = useContext(AuthContext);
 
   const [inputs, setInputs] = React.useState({ email: '', password: '' });
   const [errors, setErrors] = React.useState({});
@@ -49,13 +51,15 @@ const SignInScreen = ({ navigation }) => {
     }
   };
 
-  const sendData = () => {
-    console.log(BACKEND_URL);
-    axios.post(`${BACKEND_URL}/users/login`, { email: inputs.email, password: inputs.password })
-      .then(async (response) => {
-        await AsyncStorage.setItem('token', JSON.stringify(response.data))
-      }).
-      catch(function (error) { alert('Server error: ', error) });
+  const sendData = async () => {
+    var resp = await axios.post(`${BACKEND_URL}/users/login`, { email: inputs.email, password: inputs.password }).
+      catch(function (error) { console.log('Server error: ', error) });
+
+    // await AsyncStorage.setItem('token', JSON.stringify(resp.data))
+    console.log('sendata:', resp.data)
+    // setToken(resp.data['access_token'])
+    return resp.data
+
   }
 
   const handleOnchange = (text, input) => {
@@ -66,21 +70,36 @@ const SignInScreen = ({ navigation }) => {
     setErrors((prevState) => ({ ...prevState, [input]: error }));
   };
 
-  const login = () => {
-    sendData();
-    setLoading(true);
-    setTimeout(async () => {
-      setLoading(false);
-      let token = await AsyncStorage.getItem('token');
-      // let userData = await AsyncStorage.getItem('userData');
+  const login = async () => {
+    let tokenInStorage = await AsyncStorage.getItem('token');
+    console.log('tokeninstorage', tokenInStorage)
 
-      if (token != '{}') {
-        // AsyncStorage.setItem('userData', JSON.stringify({ ...userData, loggedIn: true }));
-        setIsLoggedIn(true);
-      } else {
-        Alert.alert('Error', 'Invalid Details');
-      }
-    }, 3000);
+    if (tokenInStorage == null) {
+      // navigation.navigate('SignInScreen')
+      let tokenInServer = await sendData();
+      console.log('tokeninserver: ', tokenInServer['access_token'])
+
+      setLoading(true);
+      setTimeout(async () => {
+        setLoading(false);
+        if (JSON.stringify(tokenInServer) != '{}') {
+          AsyncStorage.setItem('token', JSON.stringify(tokenInServer['access_token']));
+          setToken(tokenInServer['access_token'])
+          setIsLoggedIn(true);
+        } else {
+          Alert.alert('Error', 'Invalid Details');
+        }
+      }, 3000);
+    }
+
+    else {
+      console.log('else ag')
+      let tokenInStorageJSON = JSON.parse(tokenInStorage);
+      console.log('token else ag json storage:', tokenInStorageJSON)
+      setToken(tokenInStorageJSON['access_token'])
+      // AsyncStorage.setItem('token', JSON.stringify(tokenInServer['access_token']));
+      setIsLoggedIn(true);
+    }
   };
 
   return (
@@ -126,7 +145,7 @@ const SignInScreen = ({ navigation }) => {
                 Don't have an account?
               </Text>
               <Text
-                onPress={() => navigation.navigate('SignUpScreen')}
+                onPress={() => (navigation.navigate('SignUpScreen'))}
                 style={{
                   color: COLORS.white,
                   fontWeight: 'bold',

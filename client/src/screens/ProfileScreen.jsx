@@ -1,16 +1,32 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useContext } from 'react';
 import { StyleSheet, Text } from 'react-native';
+import { LoginContext } from '../components/IsLoggedIn';
+import ModifiedButton from '../components/ModifiedButton';
 
-const ProfilScreen = () => (
-  <LinearGradient
-    colors={['red', 'white']}
-    style={styles.container}
-    start={{ x: 0, y: 0 }}
-    end={{ x: 1, y: 1 }}
-  >
-    <Text style={styles.text}>My Profile</Text>
-  </LinearGradient>
-);
+
+const ProfilScreen = () => {
+  const { setIsLoggedIn } = useContext(LoginContext);
+
+  return (
+    <LinearGradient
+      colors={['red', 'white']}
+      style={styles.container}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    >
+      <ModifiedButton onPress={async () => {
+        let s = await AsyncStorage.getItem('token');
+        await AsyncStorage.clear();
+        let x = await AsyncStorage.getItem('token');
+        console.log(s)
+        console.log(x)
+        setIsLoggedIn(false);
+      }}></ModifiedButton>
+    </LinearGradient>
+  )
+};
 
 const styles = StyleSheet.create({
   container: {

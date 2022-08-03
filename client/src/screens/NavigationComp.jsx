@@ -12,6 +12,7 @@ import SignInScreen from './SingInScreen';
 import SignUpScreen from './SignUpScreen';
 import DetailedBook from './DetailedBook';
 import { LoginContext } from '../components/IsLoggedIn';
+import { AuthContext } from '../components/AuthProvider';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -98,9 +99,14 @@ const MyTabs = () => (
 
 export const Nav = () => {
   const { isLoggedIn, setIsLoggedIn } = React.useContext(LoginContext);
+  const { token, setToken } = React.useContext(AuthContext);
+
+  console.log('isloggedin: ',isLoggedIn);
 
   return (
     <NavigationContainer theme={DarkTheme}>
+      
+
       {isLoggedIn ? (
         <MyTabs />
       ) : (

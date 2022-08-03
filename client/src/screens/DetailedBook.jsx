@@ -1,11 +1,14 @@
 import { useRoute } from '@react-navigation/native';
+import { useContext } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '../utils/constants';
-import { getToken } from './HomeScreen';
+import { AuthContext } from '../components/AuthProvider';
+
+// import { getToken } from './HomeScreen';
 
 const headers = {
   headers: {
@@ -29,26 +32,26 @@ function secondsToHms(d) {
 const DetailedBook = () => {
   const route = useRoute();
   const [isLoading, setLoading] = useState(true);
-
+  const {token} = useContext(AuthContext)
   const { id } = route.params;
 
   const [data, setData] = useState([]);
-
   useEffect(() => {
-    getToken().then((token) => {
+    // getToken().then((token) => {
       if (token) {
-        headers.headers.Authorization = `Bearer ${token}`
-        axios.get(`${BACKEND_URL}/books/${id}`, headers)
-          .then(({ data }) => {
-            console.log('setdata-DetailedBook')
-            setData(data)
-          }).catch((error) => alert('Server error'))
-          .finally(() => setLoading(false));
-      }
-      else {
-        console.log('Error token')
-      }
-    })
+      console.log(token);
+      headers.headers.Authorization = `Bearer ${token}`
+      axios.get(`${BACKEND_URL}/books/${id}`, headers)
+        .then(({ data }) => {
+          console.log('setdata-DetailedBook')
+          setData(data)
+        }).catch((error) => console.log('Server error', error))
+        .finally(() => setLoading(false));
+    }
+    else {
+      console.log('Error token')
+    }
+    // })
   }, []);
 
   return (
@@ -67,7 +70,7 @@ const DetailedBook = () => {
           <View style={styles.bottomView}>
             <Text style={styles.durationText}>Duration: {secondsToHms(data.lengthInSeconds)}</Text>
             <Ionicons name="download" color={'white'} size={35} style={styles.downloadIcon}
-              onPress={() => { alert("Downloading") }} />
+              onPress={() => { console.log(token) }} />
           </View>
         </View>
       </ScrollView>

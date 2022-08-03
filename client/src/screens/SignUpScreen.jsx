@@ -65,7 +65,6 @@ const SignUpScreen = ({ navigation }) => {
       && (inputs.password) && (inputs.password.length >= 5)) {
       isValid = true;
     }
-    console.log(isValid)
 
     if (isValid) {
       register();
@@ -86,7 +85,6 @@ const SignUpScreen = ({ navigation }) => {
   }
 
   const register = () => {
-    console.log('register');
     setLoading(true);
     setTimeout(() => {
       try {
