@@ -75,7 +75,6 @@ const SignInScreen = ({ navigation }) => {
     console.log('tokeninstorage', tokenInStorage)
 
     if (tokenInStorage == null) {
-      // navigation.navigate('SignInScreen')
       let tokenInServer = await sendData();
       console.log('tokeninserver: ', tokenInServer['access_token'])
 
@@ -97,7 +96,7 @@ const SignInScreen = ({ navigation }) => {
       let tokenInStorageJSON = JSON.parse(tokenInStorage);
       console.log('token else ag json storage:', tokenInStorageJSON)
       setToken(tokenInStorageJSON['access_token'])
-      // AsyncStorage.setItem('token', JSON.stringify(tokenInServer['access_token']));
+      AsyncStorage.setItem('token', JSON.stringify(tokenInStorageJSON['access_token']));
       setIsLoggedIn(true);
     }
   };

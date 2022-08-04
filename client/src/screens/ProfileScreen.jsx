@@ -16,7 +16,7 @@ const ProfilScreen = () => {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      <ModifiedButton onPress={async () => {
+      <ModifiedButton title='LogOut' onPress={async () => {
         let s = await AsyncStorage.getItem('token');
         await AsyncStorage.clear();
         let x = await AsyncStorage.getItem('token');

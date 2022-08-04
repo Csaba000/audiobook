@@ -12,6 +12,8 @@ import axios from 'axios';
 import { BACKEND_URL } from '../utils/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../components/AuthProvider';
+import { LoginContext, LoginProvider } from '../components/IsLoggedIn';
+
 
 
 
@@ -24,6 +26,12 @@ import { AuthContext } from '../components/AuthProvider';
 //   return token
 // }
 
+export const getTokenFromStorage = async () => {
+  let tokenInStorage = await AsyncStorage.getItem('token');
+  console.log(tokenInStorage)
+  return tokenInStorage
+}
+
 const headers = {
   headers: {
     "Content-Type": "application/json",
@@ -34,11 +42,14 @@ const headers = {
 const HomeScreen = ({ navigation }) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
-  const { token } = useContext(AuthContext)
+  const { token } = useContext(AuthContext);
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+
+
 
   useEffect(() => {
     // getToken().then((token) => {
-    if (token) {
+    if (getTokenFromStorage()) {
       console.log(token)
       headers.headers.Authorization = `Bearer ${token}`
       axios.get(`${BACKEND_URL}/books`, headers)
@@ -49,6 +60,7 @@ const HomeScreen = ({ navigation }) => {
         .finally(() => setLoading(false));
     }
     else {
+      // setIsLoggedIn(false);
       alert('Login token is not good')
     }
     // })

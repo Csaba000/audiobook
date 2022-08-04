@@ -7,6 +7,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '../utils/constants';
 import { AuthContext } from '../components/AuthProvider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getTokenFromStorage } from './HomeScreen';
+
 
 // import { getToken } from './HomeScreen';
 
@@ -29,16 +32,17 @@ function secondsToHms(d) {
   return hDisplay + mDisplay + sDisplay;
 }
 
+
 const DetailedBook = () => {
   const route = useRoute();
   const [isLoading, setLoading] = useState(true);
-  const {token} = useContext(AuthContext)
+  const { token } = useContext(AuthContext)
   const { id } = route.params;
 
   const [data, setData] = useState([]);
+
   useEffect(() => {
-    // getToken().then((token) => {
-      if (token) {
+    if (getTokenFromStorage()) {
       console.log(token);
       headers.headers.Authorization = `Bearer ${token}`
       axios.get(`${BACKEND_URL}/books/${id}`, headers)
@@ -51,7 +55,6 @@ const DetailedBook = () => {
     else {
       console.log('Error token')
     }
-    // })
   }, []);
 
   return (

@@ -13,6 +13,8 @@ import SignUpScreen from './SignUpScreen';
 import DetailedBook from './DetailedBook';
 import { LoginContext } from '../components/IsLoggedIn';
 import { AuthContext } from '../components/AuthProvider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -97,16 +99,27 @@ const MyTabs = () => (
   </Tab.Navigator>
 );
 
+const checkToken = async () => {
+  const { isLoggedIn, setIsLoggedIn } = React.useContext(LoginContext);
+  let tokenInStorage = await AsyncStorage.getItem('token');
+
+  if (tokenInStorage) {
+    setIsLoggedIn(true)
+  }
+  else {
+    setIsLoggedIn(false)
+  }
+  console.log(tokenInStorage)
+}
+
+
 export const Nav = () => {
   const { isLoggedIn, setIsLoggedIn } = React.useContext(LoginContext);
   const { token, setToken } = React.useContext(AuthContext);
-
-  console.log('isloggedin: ',isLoggedIn);
+  checkToken()
 
   return (
     <NavigationContainer theme={DarkTheme}>
-      
-
       {isLoggedIn ? (
         <MyTabs />
       ) : (
