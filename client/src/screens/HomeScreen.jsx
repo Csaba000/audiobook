@@ -26,11 +26,14 @@ import { LoginContext, LoginProvider } from '../components/IsLoggedIn';
 //   return token
 // }
 
-export const getTokenFromStorage = async () => {
-  let tokenInStorage = await AsyncStorage.getItem('token');
-  console.log(tokenInStorage)
-  return tokenInStorage
-}
+// export const getTokenFromStorage = async () => {
+//   const { token, setToken } = useContext(AuthContext);
+
+//   let tokenInStorage = await AsyncStorage.getItem('token');
+//   setToken(tokenInStorage)
+//   console.log(token)
+//   return tokenInStorage
+// }
 
 const headers = {
   headers: {
@@ -42,19 +45,18 @@ const headers = {
 const HomeScreen = ({ navigation }) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
-  const { token } = useContext(AuthContext);
+  const { token, setToken } = useContext(AuthContext);
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-
 
 
   useEffect(() => {
     // getToken().then((token) => {
-    if (getTokenFromStorage()) {
-      console.log(token)
+    if (token) {
+      // console.log(token)
       headers.headers.Authorization = `Bearer ${token}`
       axios.get(`${BACKEND_URL}/books`, headers)
         .then(({ data }) => {
-          console.log('setdata-HomeScreen')
+          // console.log('setdata-HomeScreen')
           setData(data)
         }).catch((error) => alert('Server error: ', error))
         .finally(() => setLoading(false));

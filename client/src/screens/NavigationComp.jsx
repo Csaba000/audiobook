@@ -101,22 +101,24 @@ const MyTabs = () => (
 
 const checkToken = async () => {
   const { isLoggedIn, setIsLoggedIn } = React.useContext(LoginContext);
+  const {token, setToken} = React.useContext(AuthContext);
   let tokenInStorage = await AsyncStorage.getItem('token');
 
   if (tokenInStorage) {
+    setToken(tokenInStorage)
     setIsLoggedIn(true)
   }
   else {
     setIsLoggedIn(false)
   }
-  console.log(tokenInStorage)
 }
 
 
 export const Nav = () => {
   const { isLoggedIn, setIsLoggedIn } = React.useContext(LoginContext);
   const { token, setToken } = React.useContext(AuthContext);
-  checkToken()
+
+  checkToken();
 
   return (
     <NavigationContainer theme={DarkTheme}>

@@ -79,7 +79,6 @@ const SignUpScreen = ({ navigation }) => {
   };
 
   const sendData = () => {
-    console.log(BACKEND_URL);
     axios.post(`${BACKEND_URL}/users/register`, { email: inputs.email, password: inputs.password })
       .then(response => console.log(response)).catch(function (error) { alert('Server error: ', error) });
   }

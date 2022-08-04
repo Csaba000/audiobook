@@ -42,18 +42,16 @@ const DetailedBook = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    if (getTokenFromStorage()) {
-      console.log(token);
+    if (token) {
       headers.headers.Authorization = `Bearer ${token}`
       axios.get(`${BACKEND_URL}/books/${id}`, headers)
         .then(({ data }) => {
-          console.log('setdata-DetailedBook')
           setData(data)
         }).catch((error) => console.log('Server error', error))
         .finally(() => setLoading(false));
     }
     else {
-      console.log('Error token')
+      console.log('Invalid token')
     }
   }, []);
 
@@ -73,7 +71,7 @@ const DetailedBook = () => {
           <View style={styles.bottomView}>
             <Text style={styles.durationText}>Duration: {secondsToHms(data.lengthInSeconds)}</Text>
             <Ionicons name="download" color={'white'} size={35} style={styles.downloadIcon}
-              onPress={() => { console.log(token) }} />
+              onPress={() => { alert('Downloading') }} />
           </View>
         </View>
       </ScrollView>

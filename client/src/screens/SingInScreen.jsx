@@ -55,9 +55,6 @@ const SignInScreen = ({ navigation }) => {
     var resp = await axios.post(`${BACKEND_URL}/users/login`, { email: inputs.email, password: inputs.password }).
       catch(function (error) { console.log('Server error: ', error) });
 
-    // await AsyncStorage.setItem('token', JSON.stringify(resp.data))
-    console.log('sendata:', resp.data)
-    // setToken(resp.data['access_token'])
     return resp.data
 
   }
@@ -72,11 +69,9 @@ const SignInScreen = ({ navigation }) => {
 
   const login = async () => {
     let tokenInStorage = await AsyncStorage.getItem('token');
-    console.log('tokeninstorage', tokenInStorage)
 
     if (tokenInStorage == null) {
       let tokenInServer = await sendData();
-      console.log('tokeninserver: ', tokenInServer['access_token'])
 
       setLoading(true);
       setTimeout(async () => {
@@ -92,9 +87,7 @@ const SignInScreen = ({ navigation }) => {
     }
 
     else {
-      console.log('else ag')
       let tokenInStorageJSON = JSON.parse(tokenInStorage);
-      console.log('token else ag json storage:', tokenInStorageJSON)
       setToken(tokenInStorageJSON['access_token'])
       AsyncStorage.setItem('token', JSON.stringify(tokenInStorageJSON['access_token']));
       setIsLoggedIn(true);
