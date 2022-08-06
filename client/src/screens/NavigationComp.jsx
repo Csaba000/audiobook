@@ -14,7 +14,7 @@ import DetailedBook from './DetailedBook';
 import { LoginContext } from '../components/IsLoggedIn';
 import { AuthContext } from '../components/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import MusicPlayer from '../components/MusicPlayer';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -87,6 +87,17 @@ const MyTabs = () => (
         ),
       }}
     />
+
+    <Tab.Screen
+      name="MusicPlayer"
+      component={MusicPlayer}
+      options={{
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name="musical-note" color={color} size={size} />
+        ),
+      }}
+    />
+
     <Tab.Screen
       name="Profile"
       component={ProfilScreen}
@@ -101,18 +112,16 @@ const MyTabs = () => (
 
 const checkToken = async () => {
   const { isLoggedIn, setIsLoggedIn } = React.useContext(LoginContext);
-  const {token, setToken} = React.useContext(AuthContext);
+  const { token, setToken } = React.useContext(AuthContext);
   let tokenInStorage = await AsyncStorage.getItem('token');
 
   if (tokenInStorage) {
-    setToken(tokenInStorage)
-    setIsLoggedIn(true)
+    setToken(tokenInStorage);
+    setIsLoggedIn(true);
+  } else {
+    setIsLoggedIn(false);
   }
-  else {
-    setIsLoggedIn(false)
-  }
-}
-
+};
 
 export const Nav = () => {
   const { isLoggedIn, setIsLoggedIn } = React.useContext(LoginContext);

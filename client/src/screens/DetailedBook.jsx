@@ -54,7 +54,6 @@ const DetailedBook = () => {
       console.log('Invalid token')
     }
   }, []);
-
   return (
 
     <LinearGradient
