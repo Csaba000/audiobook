@@ -8,6 +8,10 @@ const AudioBookSchema = new Schema({
   author: String,
   description: String,
   lengthInSeconds: Number,
+  chapter: {
+    title: String,
+    url: String,
+  },
 });
 const bookSchema = mongoose.model("Audio_Book", AudioBookSchema);
 

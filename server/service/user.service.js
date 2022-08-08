@@ -6,22 +6,18 @@ async function listUsersbyId(id) {
   return userSchema.findById(id);
 }
 
-async function register(email, password, username) {
+async function register(email, password) {
   try {
-    const userWithSameEmail = await userSchema.findOne({ email: email });
-    if (userWithSameEmail) {
+    if (await userSchema.findOne({ email: email })) {
       throw new Error("User with this email already exists!");
-    } else {
-      await bcrypt.hash(password, 10).then((hashedPassword) => {
-        const user = new userSchema({
-          email: email,
-          password: hashedPassword,
-          username: username,
-        });
-
-        return user.save();
-      });
     }
+
+    await bcrypt.hash(password, 10).then((hashedPassword) => {
+      return new userSchema({
+        email: email,
+        password: hashedPassword,
+      }).save();
+    });
   } catch (e) {
     console.error(`Something went wrong: ${e}`);
   }
