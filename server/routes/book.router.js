@@ -3,6 +3,8 @@ import * as bookController from "../controllers/book.controller.js";
 
 const router = express.Router();
 
+router.get("/play", bookController.playAudio);
+router.get("/download", bookController.downloadAudio);
 router.get("/", bookController.bookLister);
 router.get("/:id", bookController.bookListerById);
 

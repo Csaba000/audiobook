@@ -1,15 +1,13 @@
-import userSchema from "../models/user.model.js";
 import * as userService from "../service/user.service.js";
 
 async function userListerById(request, response) {
-  const book = await userService.listUsersbyId(request.params.id);
-  response.json(book);
+  response.json(await userService.listUsersbyId(request.params.id));
 }
 
 async function register(request, response) {
   const newUser = await userService.register(
     request.body.email,
-    request.body.password,
+    request.body.password
   );
   response.json(newUser);
 }
