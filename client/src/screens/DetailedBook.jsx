@@ -63,7 +63,7 @@ const DetailedBook = () => {
       end={{ x: 1, y: 1 }}>
       <ScrollView >
         <View style={styles.scrollableView}>
-          <Image style={styles.logoImage} source={{ uri: data.coverUrl }}></Image>
+          <Image style={styles.logoImage} source={{ uri: `${data.url}.jpg` }}></Image>
           <Text style={styles.titleText}>{data.title}</Text>
           <Text style={styles.authorText}>- {data.author} -</Text>
           <Text style={styles.descriptionText}>{data.description}</Text>

@@ -18,6 +18,11 @@ import axios from 'axios';
 import { BACKEND_URL } from '../utils/constants';
 import Slider from '@react-native-community/slider';
 import { Ionicons } from '@expo/vector-icons';
+// import TrackPlayer from 'react-native-track-player';
+import { Audio } from 'expo-av';
+import { loadAsync } from 'expo-auth-session';
+import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -33,7 +38,12 @@ function secondsToHms(d) {
   return hDisplay + mDisplay + sDisplay;
 }
 
-const MusicPlayer = () => {
+
+
+const AudioPlayer = () => {
+  const [sound, setSound] = useState();
+  const [currentPosition, setCurrentPosition] = useState(0);
+  const [isPlaying, setPlaying] = useState(false);
   const scrollX = useRef(new Animated.Value(0)).current;
   const [songIndex, setSongIndex] = useState(0);
   const songSlider = useRef(null);
@@ -41,6 +51,8 @@ const MusicPlayer = () => {
   const [data, setData] = useState([]);
   const { token } = useContext(AuthContext);
   const [isLoading, setLoading] = useState(true);
+  var oldIndex = 0
+
 
   useEffect(() => {
     if (token) {
@@ -49,6 +61,7 @@ const MusicPlayer = () => {
         .get(`${BACKEND_URL}/books`, headers)
         .then(({ data }) => {
           setData(data);
+
         })
         .catch((error) => alert('Server error: ', error))
         .finally(() => setLoading(false));
@@ -58,30 +71,92 @@ const MusicPlayer = () => {
     }
   }, []);
 
+  const changeAudio = async (songIndex, sound) => {
+    if (oldIndex != songIndex) {
+      const status = await sound.pauseAsync();
+      setSoundIsPlaying(false)
+      setSoundStatus({ status: status, icon: 'ios-play-circle' });
+      oldIndex = songIndex
+    }
+
+  }
 
   useEffect(() => {
-    scrollX.addListener(({ value }) => {
+    scrollX.addListener(async ({ value }) => {
       const index = Math.round(value / width);
       setSongIndex(index);
-    //   console.log(data[songIndex]['title'])
+      // console.log('SOUND', sound)
+      // await changeAudio(index, sound)
+      // console.log(index)
+
     });
     return () => {
-    //   scrollX.removeAllListeners();
+      scrollX.removeAllListeners();
     };
   }, []);
 
-//   console.log('DATA ',data)
-//   console.log(songIndex)
+
+  React.useEffect(() => {
+    return sound
+      ? () => {
+        console.log('Unloading Sound');
+        sound.unloadAsync();
+      }
+      : undefined;
+  }, [sound]);
+
+
+  // const [sound, setSound] = useState(null);
+  const [soundStatus, setSoundStatus] = useState({ status: null, icon: 'ios-pause-circle' });
+  const [music, setSoundIsPlaying] = useState(false);
+
+
+  async function handleAudio() {
+
+
+    //playing audio for the first time
+    if (soundStatus.status === null) {
+      console.log("Loading Sound");
+      const { sound, status } = await Audio.Sound.createAsync(
+        {
+          uri: `${data[songIndex].url}.mp3`
+        },
+        { shouldPlay: true },
+      );
+      setSound(sound);
+      setSoundIsPlaying(true);
+      changeAudio(songIndex, sound)
+      setSoundStatus({ status: status, icon: 'ios-pause-circle' });
+    }
+    console.log(oldIndex, songIndex)
+
+    //pause audio
+    if (soundStatus.status) {
+      if (soundStatus.status.isLoaded && soundStatus.status.isPlaying) {
+        const status = await sound.pauseAsync();
+        console.log("pausing audio");
+        setSoundIsPlaying(false)
+
+        setSoundStatus({ status: status, icon: 'ios-play-circle' });
+      }
+
+      //resuming audio
+      if (soundStatus.status.isLoaded && !soundStatus.status.isPlaying) {
+        const status = await sound.playAsync();
+        console.log("resuming audio");
+        setSoundIsPlaying(true);
+        setSoundStatus({ status: status, icon: 'ios-pause-circle' });
+      }
+    }
+  }
 
   const skipToNext = () => {
-    console.log('elore');
     songSlider.current.scrollToOffset({
       offset: (songIndex + 1) * width,
     });
   };
 
   const skipToPrevious = () => {
-    console.log('hatra');
     songSlider.current.scrollToOffset({
       offset: (songIndex - 1) * width,
     });
@@ -89,10 +164,24 @@ const MusicPlayer = () => {
 
   const renderSongs = ({ item }) => {
     return (
+
       <Animated.View style={styles.flatListContainer}>
         <View style={styles.wrapImage}>
-          <Image style={styles.logoImage} source={{ uri: item.coverUrl }}></Image>
+          <Image style={styles.logoImage} source={{ uri: `${item.url}.jpg` }}></Image>
         </View>
+
+        < View style={{ top: 40 }}>
+          <Text style={styles.title}>{data[songIndex].title}</Text>
+          <Text style={styles.author}>{data[songIndex]['author']}</Text>
+        </View>
+
+        <View style={styles.progressLabelContainer}>
+          <Text style={styles.progressLabelText}>0:00</Text>
+          <Text style={styles.progressLabelText}>
+            {secondsToHms(data[songIndex].lengthInSeconds)}
+          </Text>
+        </View>
+
       </Animated.View>
     );
   };
@@ -124,11 +213,6 @@ const MusicPlayer = () => {
         ></Animated.FlatList>
 
         <View>
-          {/* <Text style={styles.title}>{data[songIndex].title}</Text> */}
-          {/* <Text style={styles.author}>{data[songIndex]['author']}</Text> */}
-        </View>
-
-        <View>
           <Slider
             style={styles.sliderContainer}
             value={0}
@@ -137,42 +221,53 @@ const MusicPlayer = () => {
             thumbTintColor="white"
             minimumTrackTintColor="#FFD369"
             maximumTrackTintColor="#FFF"
-            onSlidingCompelte={() => {}}
+            onValueChange={async (value) => {
+              // const valami = await sound.setPositionAsync()
+              // valami.setCurrentPosition(value)
+              // setCurrentPosition((value * sound.setPositionAsync()))
+              // console.log(currentPosition)
+            }}
+          // onSlidingComplete={async(value) => {
+          //   await sound.
+          //  }}
           ></Slider>
-          <View style={styles.progressLabelContainer}>
-            <Text style={styles.progressLabelText}>0:00</Text>
-            <Text style={styles.progressLabelText}>
-              {/* {secondsToHms(data[songIndex]['lengthInSeconds'])} */}
-            </Text>
-          </View>
         </View>
 
         <View style={styles.musicControls}>
-          <TouchableOpacity onpress={skipToPrevious}>
+          <Pressable
+            onPress={() => {skipToPrevious(); changeAudio(songIndex, sound)}}>
             <Ionicons
               name="play-skip-back-outline"
               size={35}
               color="white"
               style={{ marginTop: 15 }}
+
             ></Ionicons>
+
+          </Pressable>
+
+          <TouchableOpacity >
+            <Ionicons name={music ? "ios-pause-circle" : "ios-play-circle"}
+              size={60} color="white"
+              onPress={() => handleAudio()}></Ionicons>
           </TouchableOpacity>
-          <TouchableOpacity onpress={() => {}}>
-            <Ionicons name="ios-pause-circle" size={60} color="white"></Ionicons>
-          </TouchableOpacity>
-          <TouchableOpacity onpress={skipToNext}>
+
+          <TouchableOpacity >
             <Ionicons
               name="play-skip-forward-outline"
               size={35}
               color="white"
               style={{ marginTop: 15 }}
+              onPress={() => {skipToNext();changeAudio(songIndex-1, sound)}}
             ></Ionicons>
           </TouchableOpacity>
+
         </View>
       </View>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 };
-export default MusicPlayer;
+export default AudioPlayer;
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -200,7 +295,7 @@ const styles = StyleSheet.create({
     width: 350,
     height: 40,
     marginTop: 25,
-    bottom: 70,
+    bottom: 85,
     flexDirection: 'row',
   },
   progressLabelContainer: {
@@ -210,6 +305,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   progressLabelText: {
+    top: 150,
     color: 'white',
   },
   musicControls: {

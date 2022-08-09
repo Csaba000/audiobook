@@ -85,16 +85,15 @@ const SignUpScreen = ({ navigation }) => {
 
   const register = () => {
     setLoading(true);
-    setTimeout(() => {
-      try {
+    try {
+      // AsyncStorage.setItem('userData', JSON.stringify(inputs));
+      sendData().then(res => {
         setLoading(false);
-        // AsyncStorage.setItem('userData', JSON.stringify(inputs));
-        sendData();
         navigation.navigate('SignInScreen');
-      } catch (error) {
-        Alert.alert('Error', 'Something went wrong');
-      }
-    }, 3000);
+      })
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong');
+    }
   };
 
   return (

@@ -74,16 +74,16 @@ const SignInScreen = ({ navigation }) => {
       let tokenInServer = await sendData();
 
       setLoading(true);
-      setTimeout(async () => {
-        setLoading(false);
-        if (JSON.stringify(tokenInServer) != '{}') {
-          AsyncStorage.setItem('token', JSON.stringify(tokenInServer['access_token']));
-          setToken(tokenInServer['access_token'])
-          setIsLoggedIn(true);
-        } else {
-          Alert.alert('Error', 'Invalid Details');
-        }
-      }, 3000);
+
+      setLoading(false);
+      if (JSON.stringify(tokenInServer) != '{}') {
+        AsyncStorage.setItem('token', JSON.stringify(tokenInServer['access_token']));
+        setToken(tokenInServer['access_token'])
+        setIsLoggedIn(true);
+      } else {
+        Alert.alert('Error', 'Invalid Details');
+      }
+
     }
 
     else {

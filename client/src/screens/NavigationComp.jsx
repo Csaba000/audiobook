@@ -14,7 +14,7 @@ import DetailedBook from './DetailedBook';
 import { LoginContext } from '../components/IsLoggedIn';
 import { AuthContext } from '../components/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import MusicPlayer from '../components/MusicPlayer';
+import AudioPlayer from '../components/AudioPlayer';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -89,8 +89,8 @@ const MyTabs = () => (
     />
 
     <Tab.Screen
-      name="MusicPlayer"
-      component={MusicPlayer}
+      name="AudioPlayer"
+      component={AudioPlayer}
       options={{
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="musical-note" color={color} size={size} />

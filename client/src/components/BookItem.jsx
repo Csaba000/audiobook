@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-export const BookItem = ({ title, description, coverUrl, author, navigation, lengthInSeconds, id }) => {
+export const BookItem = ({ title, description, url, author, navigation, lengthInSeconds, id }) => {
 
     const [iconName, setIconName] = useState('heart-outline');
 
@@ -19,7 +19,7 @@ export const BookItem = ({ title, description, coverUrl, author, navigation, len
             }}
         >
             <View style={styles.item}>
-                <Image style={styles.logoImage} source={{ uri: coverUrl }} />
+                <Image style={styles.logoImage} source={{ uri: url }} />
                 <View style={styles.viewContainer}>
                     <Text style={styles.title} numberOfLines={1}>
                         {title}

@@ -2275,9 +2275,9 @@
   resolved "https://registry.npmjs.org/@react-native-community/masked-view/-/masked-view-0.1.11.tgz"
   integrity sha512-rQfMIGSR/1r/SyN87+VD8xHHzDYeHaJq6elOSCAD+0iLagXkSI2pfA0LmSXP21uw5i3em7GkkRjfJ8wpqWXZNw==
 
-"@react-native-community/slider@4.2.1":
+"@react-native-community/slider@^4.2.1":
   version "4.2.1"
-  resolved "https://registry.yarnpkg.com/@react-native-community/slider/-/slider-4.2.1.tgz#8f1c8cf62de1bd91ce1e32585f7eb666f21e5025"
+  resolved "https://registry.npmjs.org/@react-native-community/slider/-/slider-4.2.1.tgz"
   integrity sha512-6HUS5HbB9bvEN4GiwBlxECgPWQIugHE+kfnxqX2jHUl1SE57MRpw00m1qVs4hXtEPQndBl6mAQiGbKCOtLPVbg==
 
 "@react-native/assets@1.0.0":
@@ -4917,6 +4917,13 @@ expo-auth-session@~3.6.1:
     expo-web-browser "~10.2.0"
     invariant "^2.2.4"
     qs "6.9.1"
+
+expo-av@~11.2.3:
+  version "11.2.3"
+  resolved "https://registry.yarnpkg.com/expo-av/-/expo-av-11.2.3.tgz#254242dae76e3cd60ef9d9c33618e4a12d37aa33"
+  integrity sha512-ptTe96s33Ct0eOsOmNTvtaWFx4B0SDkQmDfPbiuX/C2afqbLQf8geEopw7BRO8ZZl7Qe3qBMH6YLHXKTkZkTyQ==
+  dependencies:
+    "@expo/config-plugins" "^4.0.14"
 
 expo-constants@~13.1.0, expo-constants@~13.1.1:
   version "13.1.1"
@@ -8002,7 +8009,7 @@ react-native-keyboard-aware-scroll-view@^0.9.5:
 
 react-native-reanimated@~2.8.0:
   version "2.8.0"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.8.0.tgz#93c06ca84d91fb3865110b0857c49a24e316130e"
+  resolved "https://registry.npmjs.org/react-native-reanimated/-/react-native-reanimated-2.8.0.tgz"
   integrity sha512-kJvf/UWLBMaGCs9X66MKq5zdFMgwx8D0nHnolbHR7s8ZnbLdb7TlQ/yuzIXqn/9wABfnwtNRI3CyaP1aHWMmZg==
   dependencies:
     "@babel/plugin-transform-object-assign" "^7.16.7"
@@ -8047,6 +8054,11 @@ react-native-svg@12.3.0:
   dependencies:
     css-select "^4.2.1"
     css-tree "^1.0.0-alpha.39"
+
+react-native-track-player@^2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/react-native-track-player/-/react-native-track-player-2.1.4.tgz#5e75000e382c4b8ac770b53cd6463b191c38c5ea"
+  integrity sha512-pfco6xrUCCdsfazRg7hJS+V9h+JZ24bj2ZNt5Af46wwmIpmD0lYT2Ekr6ggH6/qnCcfDBeNIK5XsrtQCPCaujg==
 
 react-native-version-info@^1.1.1:
   version "1.1.1"

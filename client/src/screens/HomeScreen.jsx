@@ -45,6 +45,7 @@ const HomeScreen = ({ navigation }) => {
         .get(`${BACKEND_URL}/books`, headers)
         .then(({ data }) => {
           setData(data);
+          
         })
         .catch((error) => alert('Server error: ', error))
         .finally(() => setLoading(false));
@@ -61,7 +62,7 @@ const HomeScreen = ({ navigation }) => {
       <BookItem
         title={item.title}
         description={item.description}
-        coverUrl={item.coverUrl}
+        url={`${item.url}.jpg`}
         author={item.author}
         navigation={navigation}
         lengthInSeconds={item.lengthInSeconds}
