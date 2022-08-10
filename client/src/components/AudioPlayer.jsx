@@ -43,7 +43,7 @@ function secondsToHms(d) {
 const AudioPlayer = () => {
   const [sound, setSound] = useState();
   const [currentPosition, setCurrentPosition] = useState(0);
-  const [isPlaying, setPlaying] = useState(false);
+  // const [isPlaying, setPlaying] = useState(false);
   const scrollX = useRef(new Animated.Value(0)).current;
   const [songIndex, setSongIndex] = useState(0);
   const songSlider = useRef(null);
@@ -51,7 +51,7 @@ const AudioPlayer = () => {
   const [data, setData] = useState([]);
   const { token } = useContext(AuthContext);
   const [isLoading, setLoading] = useState(true);
-  var oldIndex = 0
+
 
 
   useEffect(() => {
@@ -71,95 +71,238 @@ const AudioPlayer = () => {
     }
   }, []);
 
-  const changeAudio = async (songIndex, sound) => {
-    if (oldIndex != songIndex) {
-      const status = await sound.pauseAsync();
-      setSoundIsPlaying(false)
-      setSoundStatus({ status: status, icon: 'ios-play-circle' });
-      oldIndex = songIndex
-    }
 
-  }
+  // useEffect(() => {
+  //   scrollX.addListener(async ({ value }) => {
+  //     const index = Math.round(value / width);
+  //     setSongIndex(index);
+  //     console.log(index)
+  //     // console.log('SOUND', sound)
+  //     // await changeAudio(index, sound)
+  //     // console.log(index)
+
+  //   });
+  //   return () => {
+  //     scrollX.removeAllListeners();
+  //   };
+  // }, []);
 
   useEffect(() => {
-    scrollX.addListener(async ({ value }) => {
-      const index = Math.round(value / width);
-      setSongIndex(index);
-      // console.log('SOUND', sound)
-      // await changeAudio(index, sound)
-      // console.log(index)
-
-    });
-    return () => {
-      scrollX.removeAllListeners();
-    };
+    if (playbackObject === null) {
+      setPlaybackObject(new Audio.Sound());
+    }
+    else {
+      return setSongIndex(0)
+    }
   }, []);
 
+  var oldIndex = 0
+  const changeAudio = async (songIndex) => {
+    // setSongIndex(songIndex + 1)
+    console.log('song', songIndex)
+    console.log('old', oldIndex)
 
-  React.useEffect(() => {
-    return sound
-      ? () => {
-        console.log('Unloading Sound');
-        sound.unloadAsync();
-      }
-      : undefined;
-  }, [sound]);
+    if (oldIndex != songIndex) {
+      oldIndex = songIndex
+      console.log('old in if', oldIndex)
+
+      const status = await playbackObject.stopAsync();
+      await playbackObject.unloadAsync()
+      console.log('Audio has been unloaded')
+      setIsPlaying(false);
+
+      setSoundStatus({ status: status, icon: 'ios-play-circle' });
+
+      await playbackObject.loadAsync(
+        { uri: `${data[songIndex].url}.mp3` },
+        { shouldPlay: true }
+      );
+      setIsPlaying(true);
+    }
+  }
 
 
-  // const [sound, setSound] = useState(null);
   const [soundStatus, setSoundStatus] = useState({ status: null, icon: 'ios-pause-circle' });
   const [music, setSoundIsPlaying] = useState(false);
 
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackObject, setPlaybackObject] = useState(null);
+  const [playbackStatus, setPlaybackStatus] = useState(null);
 
-  async function handleAudio() {
-
-
-    //playing audio for the first time
-    if (soundStatus.status === null) {
-      console.log("Loading Sound");
-      const { sound, status } = await Audio.Sound.createAsync(
-        {
-          uri: `${data[songIndex].url}.mp3`
-        },
-        { shouldPlay: true },
+  const handleAudioPlayPause = async () => {
+    if (playbackObject !== null && playbackStatus === null) {
+      const status = await playbackObject.loadAsync(
+        { uri: `${data[songIndex].url}.mp3` },
+        { shouldPlay: true }
       );
-      setSound(sound);
-      setSoundIsPlaying(true);
-      changeAudio(songIndex, sound)
-      setSoundStatus({ status: status, icon: 'ios-pause-circle' });
+      setIsPlaying(true);
+      return setPlaybackStatus(status);
     }
-    console.log(oldIndex, songIndex)
 
-    //pause audio
-    if (soundStatus.status) {
-      if (soundStatus.status.isLoaded && soundStatus.status.isPlaying) {
-        const status = await sound.pauseAsync();
-        console.log("pausing audio");
-        setSoundIsPlaying(false)
+    // It will pause our audio
+    if (playbackStatus.isPlaying) {
+      const status = await playbackObject.pauseAsync();
+      setIsPlaying(false);
+      return setPlaybackStatus(status);
+    }
 
-        setSoundStatus({ status: status, icon: 'ios-play-circle' });
-      }
+    // It will resume our audio
+    if (!playbackStatus.isPlaying) {
+      const status = await playbackObject.playAsync();
+      setIsPlaying(true);
+      return setPlaybackStatus(status);
+    }
+  };
 
-      //resuming audio
-      if (soundStatus.status.isLoaded && !soundStatus.status.isPlaying) {
-        const status = await sound.playAsync();
-        console.log("resuming audio");
-        setSoundIsPlaying(true);
-        setSoundStatus({ status: status, icon: 'ios-pause-circle' });
-      }
+  const loadAudio = async () => {
+    if (playbackObject !== null && playbackStatus === null) {
+      const status = await playbackObject.loadAsync(
+        { uri: `${data[songIndex].url}.mp3` },
+        { shouldPlay: true }
+      );
+      // setIsPlaying(true);
+      return setPlaybackStatus(status);
     }
   }
 
-  const skipToNext = () => {
+  // async function handleAudio() {
+
+  //   //playing audio for the first time
+  //   if (soundStatus.status === null) {
+  //     console.log("Loading Sound");
+  //     const { sound, status } = await Audio.Sound.createAsync(
+  //       {
+  //         uri: `${data[songIndex].url}.mp3`
+  //       },
+  //       { shouldPlay: true },
+  //     );
+  //     setSound(sound);
+  //     setSoundIsPlaying(true);
+  //     // if (oldIndex != songIndex) {
+  //     changeAudio(songIndex, sound)
+  //     // }
+  //     setSoundStatus({ status: status, icon: 'ios-pause-circle' });
+  //   }
+
+  //   if (oldIndex != songIndex) {
+  //     try {
+  //       if (soundStatus.status) {
+  //         if (soundStatus.status.isLoaded && soundStatus.status.isPlaying) {
+  //           await sound.unloadAsync()
+  //           await sound.loadAsync({ uri: `${data[songIndex].url}.mp3` }, { shouldPlay: true });
+  //           await sound.playAsync();
+  //           setSoundIsPlaying(true);
+  //         }
+  //         else {
+  //           console.log('HIBA-HANDLEAUDIO-loaded&isplaying')
+
+  //         }
+  //       }
+  //       else {
+  //         console.log('HIBA-HANDLEAUDIO- sound status')
+  //       }
+  //     } catch (err) {
+  //       console.warn("Couldn't Play audio", err)
+  //     }
+  //   }
+  //   else {
+  //     try {
+  //       if (soundStatus.status) {
+  //         if (soundStatus.status.isLoaded && soundStatus.status.isPlaying) {
+  //           await sound.unloadAsync()
+  //           await sound.loadAsync({ uri: `${data[songIndex].url}.mp3` }, { shouldPlay: true });
+  //           await sound.playAsync();
+  //           setSoundIsPlaying(true);
+  //         }
+  //       }
+  //     } catch (err) {
+  //       console.warn("Couldn't Play audio", err)
+  //     }
+  //   }
+  //   //pause audio
+  //   if (soundStatus.status) {
+  //     if (soundStatus.status.isLoaded && soundStatus.status.isPlaying) {
+  //       const status = await sound.pauseAsync();
+  //       console.log("pausing audio");
+  //       setSoundIsPlaying(false)
+  //       setSoundStatus({ status: status, icon: 'ios-play-circle' });
+  //     }
+
+  //     //resuming audio
+  //     if (soundStatus.status.isLoaded && !soundStatus.status.isPlaying) {
+  //       const status = await sound.playAsync();
+  //       console.log("resuming audio");
+  //       setSoundIsPlaying(true);
+  //       setSoundStatus({ status: status, icon: 'ios-pause-circle' });
+  //     }
+  //   }
+  // }
+
+  const skipToNext = async () => {
     songSlider.current.scrollToOffset({
       offset: (songIndex + 1) * width,
     });
+
+    console.log('skipnext:', songIndex)
+    changeAudio(songIndex + 1)
+    setSongIndex(songIndex + 1)
+
+    // // changeAudio(songIndex, playbackObject)
+    // if (isPlaying) {
+    //   await playbackObject.stopAsync();
+    //   await playbackObject.unloadAsync()
+
+    //   // if ( songIndex > data.length){
+    //   //   setSongIndex(data.length)
+    //   // }
+    //   const status = await playbackObject.loadAsync(
+    //     { uri: `${data[songIndex].url}.mp3` },
+    //     { shouldPlay: true }
+    //   );
+    //   setIsPlaying(true);
+    // }
+    // setSongIndex(songIndex)
+    // else {
+    //   loadAudio()
+    // }
+
   };
 
-  const skipToPrevious = () => {
+  const skipToPrevious = async () => {
     songSlider.current.scrollToOffset({
       offset: (songIndex - 1) * width,
     });
+    console.log('songIndexminenek elott', songIndex)
+    changeAudio(songIndex - 1)
+    setSongIndex(songIndex - 1)
+
+    console.log('if elott song: ',songIndex)
+    if (songIndex <= 0) {
+      console.log('VALAMI',songIndex)
+      setSongIndex(0)
+    }
+
+    console.log('previes:', songIndex)
+
+    // changeAudio(songIndex, playbackObject)
+
+    // if (isPlaying) {
+    //   await playbackObject.stopAsync();
+    //   await playbackObject.unloadAsync()
+
+    //   const status = await playbackObject.loadAsync(
+    //     { uri: `${data[songIndex].url}.mp3` },
+    //     { shouldPlay: true }
+    //   );
+
+    //   setIsPlaying(true);
+    // }
+    // setSongIndex(songIndex)
+
+    // else{
+    //   loadAudio()
+    // }
+
   };
 
   const renderSongs = ({ item }) => {
@@ -235,7 +378,7 @@ const AudioPlayer = () => {
 
         <View style={styles.musicControls}>
           <Pressable
-            onPress={() => {skipToPrevious(); changeAudio(songIndex, sound)}}>
+            onPress={() => { skipToPrevious(); }}>
             <Ionicons
               name="play-skip-back-outline"
               size={35}
@@ -247,9 +390,9 @@ const AudioPlayer = () => {
           </Pressable>
 
           <TouchableOpacity >
-            <Ionicons name={music ? "ios-pause-circle" : "ios-play-circle"}
+            <Ionicons name={isPlaying ? "ios-pause-circle" : "ios-play-circle"}
               size={60} color="white"
-              onPress={() => handleAudio()}></Ionicons>
+              onPress={() => handleAudioPlayPause()}></Ionicons>
           </TouchableOpacity>
 
           <TouchableOpacity >
@@ -258,7 +401,7 @@ const AudioPlayer = () => {
               size={35}
               color="white"
               style={{ marginTop: 15 }}
-              onPress={() => {skipToNext();changeAudio(songIndex-1, sound)}}
+              onPress={() => { skipToNext(); }}
             ></Ionicons>
           </TouchableOpacity>
 
