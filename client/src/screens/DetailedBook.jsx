@@ -9,74 +9,80 @@ import { BACKEND_URL } from '../utils/constants';
 import { AuthContext } from '../components/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getTokenFromStorage } from './HomeScreen';
-
+import AudioPlayer from '../components/AudioPlayer';
 
 // import { getToken } from './HomeScreen';
 
 const headers = {
   headers: {
-    "Content-Type": "application/json",
-    "Authorization": ''
-  }
-}
+    'Content-Type': 'application/json',
+    Authorization: '',
+  },
+};
 
 function secondsToHms(d) {
   d = Number(d);
   var h = Math.floor(d / 3600);
-  var m = Math.floor(d % 3600 / 60);
-  var s = Math.floor(d % 3600 % 60);
+  var m = Math.floor((d % 3600) / 60);
+  var s = Math.floor((d % 3600) % 60);
 
-  var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
-  var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
-  var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+  var hDisplay = h > 0 ? h + (h == 1 ? ' hour, ' : ' hours, ') : '';
+  var mDisplay = m > 0 ? m + (m == 1 ? ' minute, ' : ' minutes, ') : '';
+  var sDisplay = s > 0 ? s + (s == 1 ? ' second' : ' seconds') : '';
   return hDisplay + mDisplay + sDisplay;
 }
 
-
-const DetailedBook = () => {
+const DetailedBook = ({ navigation }) => {
   const route = useRoute();
   const [isLoading, setLoading] = useState(true);
-  const { token } = useContext(AuthContext)
+  const { token } = useContext(AuthContext);
   const { id } = route.params;
 
   const [data, setData] = useState([]);
 
   useEffect(() => {
     if (token) {
-      headers.headers.Authorization = `Bearer ${token}`
-      axios.get(`${BACKEND_URL}/books/${id}`, headers)
+      headers.headers.Authorization = `Bearer ${token}`;
+      axios
+        .get(`${BACKEND_URL}/books/${id}`, headers)
         .then(({ data }) => {
-          setData(data)
-        }).catch((error) => console.log('Server error', error))
+          setData(data);
+        })
+        .catch((error) => console.log('Server error', error))
         .finally(() => setLoading(false));
-    }
-    else {
-      console.log('Invalid token')
+    } else {
+      console.log('Invalid token');
     }
   }, []);
   return (
-
     <LinearGradient
       colors={['#866B90', '#2101']}
       style={styles.container}
       start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}>
-      <ScrollView >
+      end={{ x: 1, y: 1 }}
+    >
+      <ScrollView>
         <View style={styles.scrollableView}>
           <Image style={styles.logoImage} source={{ uri: `${data.url}.jpg` }}></Image>
           <Text style={styles.titleText}>{data.title}</Text>
           <Text style={styles.authorText}>- {data.author} -</Text>
-          <Text style={styles.descriptionText}>{data.description}</Text>
+          <Text style={styles.descriptionText}>{data.description}{data.description}</Text>
           <View style={styles.bottomView}>
             <Text style={styles.durationText}>Duration: {secondsToHms(data.lengthInSeconds)}</Text>
-            <Ionicons name="download" color={'white'} size={35} style={styles.downloadIcon}
-              onPress={() => { alert('Downloading') }} />
+            <Ionicons
+              name="play"
+              color={'white'}
+              size={35}
+              style={styles.downloadIcon}
+              onPress={() => {
+                navigation.navigate('AudioPlayer', { selectedId: id });
+              }}
+            />
           </View>
         </View>
       </ScrollView>
     </LinearGradient>
   );
-
 };
 
 const styles = StyleSheet.create({
@@ -84,7 +90,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#6BBD99'
+    backgroundColor: '#6BBD99',
   },
   bookContainter: {
     height: 700,
@@ -111,30 +117,31 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 30,
     color: 'white',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   authorText: {
     fontSize: 18,
-    color: 'white'
+    color: 'white',
   },
   descriptionText: {
     fontSize: 15,
     padding: 20,
-    color: 'white'
+    color: 'white',
   },
   bottomView: {
     flexDirection: 'row',
-    padding: 20
+    padding: 20,
   },
   durationText: {
     fontSize: 13,
     color: 'white',
     position: 'absolute',
-    right: -50
+    right: -50,
   },
   downloadIcon: {
     position: 'absolute',
-    bottom: 15, left: 115
+    bottom: 15,
+    left: 115,
   },
   text: {
     color: '#fff',

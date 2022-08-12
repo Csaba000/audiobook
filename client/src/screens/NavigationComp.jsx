@@ -91,6 +91,7 @@ const MyTabs = () => (
     <Tab.Screen
       name="AudioPlayer"
       component={AudioPlayer}
+      initialParams={{ selectedId: 0 }}
       options={{
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="musical-note" color={color} size={size} />
