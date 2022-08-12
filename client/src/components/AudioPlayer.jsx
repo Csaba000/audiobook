@@ -52,6 +52,7 @@ const AudioPlayer = ({ navigation }) => {
   const [soundStatus, setSoundStatus] = useState({ status: null, icon: 'ios-pause-circle' });
 
   const [isPlaying, setIsPlaying] = useState(false);
+  // var playbackObject = new Audio.Sound();
   const [playbackObject, setPlaybackObject] = useState(null);
   const [playbackStatus, setPlaybackStatus] = useState(null);
   const [currentTime, setCurrentTime] = useState();
@@ -60,6 +61,7 @@ const AudioPlayer = ({ navigation }) => {
   const { selectedId } = route.params;
   var prev = 0;
 
+  //token
   useEffect(() => {
     if (token) {
       headers.headers.Authorization = `Bearer ${token}`;
@@ -76,6 +78,7 @@ const AudioPlayer = ({ navigation }) => {
     }
   }, []);
 
+  //scrollX
   useEffect(() => {
     scrollX.addListener(({ value }) => {
       // console.log(scrollX)
@@ -97,6 +100,7 @@ const AudioPlayer = ({ navigation }) => {
     };
   }, []);
 
+  //jumpToIndex
   useFocusEffect(
     useCallback(() => {
       // setTimeout(() => scrollToIndex(), 500);
@@ -106,18 +110,16 @@ const AudioPlayer = ({ navigation }) => {
   useEffect(() => {
     if (playbackObject == null) {
       setPlaybackObject(new Audio.Sound());
-
+      // playbackObject = new Audio.Sound();
       console.log('initialized');
     } else {
       return setSongIndex(0);
     }
   }, []);
 
-  useEffect(() => {
-    console.log(currentTime);
-    console.log('helo')
-  }, [currentTime]);
-
+  // useEffect(() => {
+  //   console.log(currentTime);
+  // }, [currentTime]);
 
   // const scrollToIndex = () => {
   //   console.log('scroll to index called !');
@@ -133,8 +135,12 @@ const AudioPlayer = ({ navigation }) => {
 
       if (playbackObject != null) {
         const status = await playbackObject.stopAsync();
-        await playbackObject.unloadAsync();
-        console.log('Audio has been unloaded');
+        try {
+          await playbackObject.unloadAsync();
+          console.log('Audio has been unloaded');
+        } catch (error) {
+          console.log(' 1 ERROR 1', error);
+        }
         setIsPlaying(false);
         setSoundStatus({ status: status, icon: 'ios-play-circle' });
       }
@@ -149,18 +155,6 @@ const AudioPlayer = ({ navigation }) => {
     }
   };
 
-  const calculateSeebBar = () => {
-    if (playbackStatus.positionMillis !== null && playbackStatus.durationMillis !== null) {
-      return playbackStatus.positionMillis / playbackStatus.durationMillis;
-    }
-
-    if (playbackStatus.positionMillis) {
-      return playbackStatus.positionMillis / (playbackStatus.durationMillis * 1000);
-    }
-
-    return 0;
-  };
-
   function millisToMinutesAndSeconds(millis) {
     var minutes = Math.floor(millis / 60000);
     var seconds = ((millis % 60000) / 1000).toFixed(0);
@@ -172,15 +166,21 @@ const AudioPlayer = ({ navigation }) => {
       const status = await playbackObject
         .loadAsync({ uri: `${data[songIndex].url}.mp3` }, { shouldPlay: true })
         .catch((e) => {
-          console.log('asd');
+          console.log(e);
         });
-        // new Audio.Sound().setOnPlaybackStatusUpdate
-        // console.log(playbackObject)
-      // playbackObject.onPlaybackStatusUpdate(() => setCurrentTime(status.positionMillis));
+      // new Audio.Sound().setOnPlaybackStatusUpdate
+      playbackObject.setOnPlaybackStatusUpdate(async () => {
+        if (playbackObject._loaded) {
+          var result = await playbackObject.getStatusAsync();
+          // console.log(playbackObject._loaded);
+          setCurrentTime(result.positionMillis);
+        }
+        console.log(result);
+      });
+
       setIsPlaying(true);
       return setPlaybackStatus(status);
     }
-
     // It will pause our audio
     if (playbackStatus.isPlaying) {
       const status = await playbackObject.pauseAsync();
@@ -200,6 +200,7 @@ const AudioPlayer = ({ navigation }) => {
     if (songIndex > data.length - 2) {
       return;
     }
+    setCurrentTime(0);
 
     var nextSongIndex = songIndex + 1;
     setSongIndex(nextSongIndex);
@@ -215,6 +216,7 @@ const AudioPlayer = ({ navigation }) => {
     if (songIndex - 1 < 0) {
       return;
     }
+    setCurrentTime(0);
 
     var previousSongIndex = songIndex - 1;
     setSongIndex(previousSongIndex);
@@ -240,7 +242,7 @@ const AudioPlayer = ({ navigation }) => {
 
         <View style={styles.progressLabelContainer}>
           <Text style={styles.progressLabelText}>
-            {playbackStatus ? millisToMinutesAndSeconds(playbackStatus.positionMillis) : '0:00'}
+            {currentTime ? millisToMinutesAndSeconds(currentTime) : '0:00'}
           </Text>
           <Text style={styles.progressLabelText}>
             {playbackStatus
@@ -281,14 +283,14 @@ const AudioPlayer = ({ navigation }) => {
         <View>
           <Slider
             style={styles.sliderContainer}
-            value={playbackStatus ? playbackStatus.positionMillis : 0}
+            value={currentTime}
             minimumValue={0}
             maximumValue={playbackStatus ? playbackStatus.durationMillis : 0}
             thumbTintColor="white"
             minimumTrackTintColor="#FFD369"
             maximumTrackTintColor="#FFF"
             onValueChange={async (value) => {
-              // setCurrentPosition(millisToMinutesAndSeconds(value));
+              // setCurrentPosition(millisToMinutesAndSeconds(currentTime));
               // console.log(millisToMinutesAndSeconds(value));
               await playbackObject.setPositionAsync(value);
             }}
