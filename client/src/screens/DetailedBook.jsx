@@ -54,6 +54,7 @@ const DetailedBook = ({ navigation }) => {
       console.log('Invalid token');
     }
   }, []);
+  
   return (
     <LinearGradient
       colors={['#866B90', '#2101']}
