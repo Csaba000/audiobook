@@ -16,13 +16,20 @@ import COLORS from '../constants/colors';
 import Loader from '../components/Loader';
 import ModifiedButton from '../components/ModifiedButton';
 import { LoginContext } from '../components/IsLoggedIn';
+import { BACKEND_URL } from '../utils/constants';
+import axios from 'axios';
+import HomeScreen from './HomeScreen';
+import { StackActions } from '@react-navigation/native';
+import { AuthContext } from '../components/AuthProvider';
 
 const SignInScreen = ({ navigation }) => {
   const { setIsLoggedIn } = useContext(LoginContext);
+  const { token, setToken } = useContext(AuthContext);
 
   const [inputs, setInputs] = React.useState({ email: '', password: '' });
   const [errors, setErrors] = React.useState({});
   const [loading, setLoading] = React.useState(false);
+  const [data, setData] = React.useState([]);
 
   const validate = async () => {
     Keyboard.dismiss();
@@ -30,16 +37,27 @@ const SignInScreen = ({ navigation }) => {
     if (!inputs.email) {
       handleError('Please input email', 'email');
       isValid = false;
+    } else if (!inputs.email.match(/\S+@\S+\.\S+/)) {
+      handleError('Please input a valid email', 'email');
+      isValid = false;
     }
     if (!inputs.password) {
       handleError('Please input password', 'password');
       isValid = false;
     }
     if (isValid) {
-      setIsLoggedIn(true);
-      //login();
+      // setIsLoggedIn(true);
+      login();
     }
   };
+
+  const sendData = async () => {
+    var resp = await axios.post(`${BACKEND_URL}/users/login`, { email: inputs.email, password: inputs.password }).
+      catch(function (error) { console.log('Server error: ', error) });
+
+    return resp.data
+
+  }
 
   const handleOnchange = (text, input) => {
     setInputs((prevState) => ({ ...prevState, [input]: text }));
@@ -49,23 +67,31 @@ const SignInScreen = ({ navigation }) => {
     setErrors((prevState) => ({ ...prevState, [input]: error }));
   };
 
-  const login = () => {
-    setLoading(true);
-    setTimeout(async () => {
-      setLoading(false);
-      let userData = await AsyncStorage.getItem('userData');
-      if (userData) {
-        userData = JSON.parse(userData);
-        if (inputs.email == userData.email && inputs.password == userData.password) {
-          navigation.navigate('HomeScreen');
-          AsyncStorage.setItem('userData', JSON.stringify({ ...userData, loggedIn: true }));
+  const login = async () => {
+    let tokenInStorage = await AsyncStorage.getItem('token');
+
+    if (tokenInStorage == null) {
+      let tokenInServer = await sendData();
+
+      setLoading(true);
+      setTimeout(async () => {
+        setLoading(false);
+        if (JSON.stringify(tokenInServer) != '{}') {
+          AsyncStorage.setItem('token', JSON.stringify(tokenInServer['access_token']));
+          setToken(tokenInServer['access_token'])
+          setIsLoggedIn(true);
         } else {
           Alert.alert('Error', 'Invalid Details');
         }
-      } else {
-        Alert.alert('Error', 'User does not exist');
-      }
-    }, 3000);
+      }, 3000);
+    }
+
+    else {
+      let tokenInStorageJSON = JSON.parse(tokenInStorage);
+      setToken(tokenInStorageJSON['access_token'])
+      AsyncStorage.setItem('token', JSON.stringify(tokenInStorageJSON['access_token']));
+      setIsLoggedIn(true);
+    }
   };
 
   return (
@@ -99,7 +125,7 @@ const SignInScreen = ({ navigation }) => {
                 password
               />
 
-              <ModifiedButton title="Log In" onPress={validate} />
+              <ModifiedButton title="Log In" onPress={() => { validate() }} />
 
               <Text
                 style={{
@@ -111,7 +137,7 @@ const SignInScreen = ({ navigation }) => {
                 Don't have an account?
               </Text>
               <Text
-                onPress={() => navigation.navigate('SignUpScreen')}
+                onPress={() => (navigation.navigate('SignUpScreen'))}
                 style={{
                   color: COLORS.white,
                   fontWeight: 'bold',

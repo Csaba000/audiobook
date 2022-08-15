@@ -1,29 +1,58 @@
 import { useRoute } from '@react-navigation/native';
+import { useContext } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '../utils/constants';
+import { AuthContext } from '../components/AuthProvider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getTokenFromStorage } from './HomeScreen';
+
+
+// import { getToken } from './HomeScreen';
 
 const headers = {
   headers: {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    "Authorization": ''
   }
 }
 
+function secondsToHms(d) {
+  d = Number(d);
+  var h = Math.floor(d / 3600);
+  var m = Math.floor(d % 3600 / 60);
+  var s = Math.floor(d % 3600 % 60);
+
+  var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
+  var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
+  var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+  return hDisplay + mDisplay + sDisplay;
+}
+
+
 const DetailedBook = () => {
   const route = useRoute();
-
+  const [isLoading, setLoading] = useState(true);
+  const { token } = useContext(AuthContext)
   const { id } = route.params;
 
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    axios.get(`${BACKEND_URL}/books/${id}`, headers)
-      .then(({ data }) => {
-        setData(data)
-      }).catch((error) => console.error(error))
+    if (token) {
+      headers.headers.Authorization = `Bearer ${token}`
+      axios.get(`${BACKEND_URL}/books/${id}`, headers)
+        .then(({ data }) => {
+          setData(data)
+        }).catch((error) => console.log('Server error', error))
+        .finally(() => setLoading(false));
+    }
+    else {
+      console.log('Invalid token')
+    }
   }, []);
 
   return (
@@ -38,11 +67,11 @@ const DetailedBook = () => {
           <Image style={styles.logoImage} source={{ uri: data.coverUrl }}></Image>
           <Text style={styles.titleText}>{data.title}</Text>
           <Text style={styles.authorText}>- {data.author} -</Text>
-          <Text style={styles.descriptionText}>{data.description}{data.description}{data.description}{data.description}{data.description}{data.description}{data.description}</Text>
+          <Text style={styles.descriptionText}>{data.description}</Text>
           <View style={styles.bottomView}>
-            <Text style={styles.durationText}>Duration: {data.lengthInSeconds}s</Text>
+            <Text style={styles.durationText}>Duration: {secondsToHms(data.lengthInSeconds)}</Text>
             <Ionicons name="download" color={'white'} size={35} style={styles.downloadIcon}
-              onPress={() => { alert("Downloading") }} />
+              onPress={() => { alert('Downloading') }} />
           </View>
         </View>
       </ScrollView>
@@ -71,7 +100,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoImage: {
-
     borderWidth: 2,
     borderColor: 'white',
     borderRadius: 10,
@@ -100,10 +128,10 @@ const styles = StyleSheet.create({
     padding: 20
   },
   durationText: {
-    fontSize: 15,
+    fontSize: 13,
     color: 'white',
     position: 'absolute',
-    right: 50
+    right: -50
   },
   downloadIcon: {
     position: 'absolute',
