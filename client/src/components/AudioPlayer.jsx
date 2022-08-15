@@ -41,7 +41,7 @@ function secondsToHms(d) {
 const AudioPlayer = ({ navigation }) => {
   const [currentPosition, setCurrentPosition] = useState(0);
   const [myText, setMyText] = useState();
-  const flatlistRef = useRef();
+  const flatlistRef = useRef(null);
   // const [isPlaying, setPlaying] = useState(false);
   const scrollX = useRef(new Animated.Value(0)).current;
   const prevScrollX = useRef();
@@ -97,16 +97,32 @@ const AudioPlayer = ({ navigation }) => {
     // };
   }, [playbackObject]);
 
-  // //jumpToIndex
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     setTimeout(() => scrollToIndex(), 500);
-  //   }, [])
-  // );
+  // jumpToIndex
+  useFocusEffect(
+    useCallback(() => {
+      if (data) {
+        setTimeout(() => scrollToIndex(), 100);
 
+      }
+    }, [data, selectedId])
+  );
+
+  const searchIndex = (selectedId) => {
+    for (var i = 0; i <= data.length - 1; ++i) {
+
+      console.log('\n')
+      if (selectedId == data[i]._id) {
+        setSongIndex(i);
+        return i;
+      }
+    }
+  };
+
+  // searchIndex();
   //initialize audio
   useEffect(() => {
     if (data) {
+      // searchIndex(selectedId)
       if (playbackObject == null) {
         setPlaybackObject(new Audio.Sound());
         console.log('initialized');
@@ -117,9 +133,13 @@ const AudioPlayer = ({ navigation }) => {
   }, [data]);
 
   const scrollToIndex = () => {
-    console.log('scroll to index called !');
-    console.log(flatlistRef)
-    flatlistRef.current.scrollToIndex({ animated: true, index: 1 });
+    var songId = searchIndex(selectedId);
+    console.log('songId:', songId);
+    // changeAudio(searchIndex(selectedId))
+    setSongIndex(songId)
+    flatlistRef.current.scrollToIndex({ animated: true, index: songId });
+    // swipeAudio(songId);
+    // setSongIndex(songId);
   };
 
   const swipeAudio = async (songIndex) => {
@@ -133,7 +153,6 @@ const AudioPlayer = ({ navigation }) => {
       }
       setIsPlaying(false);
       setSoundStatus({ status: status, icon: 'ios-play-circle' });
-
       const status2 = await playbackObject
         .loadAsync({ uri: `${data[songIndex].url}.mp3` }, { shouldPlay: true })
         .catch((e) => {
@@ -148,8 +167,6 @@ const AudioPlayer = ({ navigation }) => {
     var oldIndex = songIndex;
 
     if (oldIndex != songIndexPara) {
-      console.log('oldindex');
-
       oldIndex = songIndexPara;
 
       if (playbackObject != null) {
@@ -186,20 +203,21 @@ const AudioPlayer = ({ navigation }) => {
         .catch((e) => {
           console.log(e);
         });
-      // new Audio.Sound().setOnPlaybackStatusUpdate
-      playbackObject.setOnPlaybackStatusUpdate(async () => {
-        if (playbackObject._loaded) {
-          var result = await playbackObject.getStatusAsync();
-          // console.log(playbackObject._loaded);
-          setCurrentTime(result.positionMillis);
-        }
-      });
-
-      setIsPlaying(true);
-      return setPlaybackStatus(status);
-    }
-    // It will pause our audio
-    if (playbackStatus.isPlaying) {
+        // new Audio.Sound().setOnPlaybackStatusUpdate
+        playbackObject.setOnPlaybackStatusUpdate(async () => {
+          if (playbackObject._loaded) {
+            var result = await playbackObject.getStatusAsync();
+            // console.log(playbackObject._loaded);
+            setCurrentTime(result.positionMillis);
+          }
+        });
+        
+        setIsPlaying(true);
+        return setPlaybackStatus(status);
+      }
+      // It will pause our audio
+      if (playbackStatus.isPlaying) {
+      console.log('songIndex', songIndex)
       const status = await playbackObject.pauseAsync();
       setIsPlaying(false);
       return setPlaybackStatus(status);
@@ -215,7 +233,7 @@ const AudioPlayer = ({ navigation }) => {
 
   const skipToNext = async () => {
     if (songIndex > data.length - 2) {
-      console.log(songIndex);
+
       return;
     }
     setCurrentTime(0);
@@ -223,11 +241,10 @@ const AudioPlayer = ({ navigation }) => {
     var nextSongIndex = songIndex + 1;
     setSongIndex(nextSongIndex);
 
-    await songSlider.current.scrollToOffset({
+    await flatlistRef.current.scrollToOffset({
       offset: nextSongIndex * width,
     });
 
-    console.log('audio');
     changeAudio(nextSongIndex);
   };
 
@@ -240,7 +257,7 @@ const AudioPlayer = ({ navigation }) => {
     var previousSongIndex = songIndex - 1;
     setSongIndex(previousSongIndex);
 
-    songSlider.current.scrollToOffset({
+    flatlistRef.current.scrollToOffset({
       offset: previousSongIndex * width,
     });
 
@@ -277,7 +294,7 @@ const AudioPlayer = ({ navigation }) => {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.mainContainer}>
         <Animated.FlatList
-          ref={songSlider}
+          ref={flatlistRef}
           renderItem={renderSongs}
           data={data}
           keyExtractor={(item, index) => {

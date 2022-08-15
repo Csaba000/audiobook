@@ -90,8 +90,11 @@ const SignUpScreen = ({ navigation }) => {
       sendData().then(res => {
         setLoading(false);
         navigation.navigate('SignInScreen');
+      }).catch(e => {
+        console.log(e)
       })
     } catch (error) {
+      setLoading(false);
       Alert.alert('Error', 'Something went wrong');
     }
   };
