@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   SafeAreaView,
   FlatList,
@@ -10,25 +10,62 @@ import { BookItem } from '../components/BookItem';
 import { BookListHeader } from '../components/BookListHeader';
 import axios from 'axios';
 import { BACKEND_URL } from '../utils/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthContext } from '../components/AuthProvider';
+import { LoginContext, LoginProvider } from '../components/IsLoggedIn';
+
+
+
+
+// export async function getToken() {
+
+
+//   // // let token = await AsyncStorage.getItem('token')
+//   // let obj = JSON.parse(token);
+//   // let tokenValue = obj.access_token;
+//   return token
+// }
+
+// export const getTokenFromStorage = async () => {
+//   const { token, setToken } = useContext(AuthContext);
+
+//   let tokenInStorage = await AsyncStorage.getItem('token');
+//   setToken(tokenInStorage)
+//   console.log(token)
+//   return tokenInStorage
+// }
 
 const headers = {
   headers: {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    "Authorization": ''
   }
 }
 
 const HomeScreen = ({ navigation }) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
-
+  const { token, setToken } = useContext(AuthContext);
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
 
   useEffect(() => {
-    axios.get(`${BACKEND_URL}/books`, headers)
-      .then(({ data }) => {
-        setData(data)
-      }).catch((error) => console.error(error))
-      .finally(() => setLoading(false));
+    // getToken().then((token) => {
+    if (token) {
+      // console.log(token)
+      headers.headers.Authorization = `Bearer ${token}`
+      axios.get(`${BACKEND_URL}/books`, headers)
+        .then(({ data }) => {
+          // console.log('setdata-HomeScreen')
+          setData(data)
+        }).catch((error) => alert('Server error: ', error))
+        .finally(() => setLoading(false));
+    }
+    else {
+      // setIsLoggedIn(false);
+      alert('Login token is not good')
+    }
+    // })
   }, []);
 
   const renderItem = ({ item }) => {
