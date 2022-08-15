@@ -101,17 +101,18 @@ const AudioPlayer = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       if (data) {
-        setTimeout(() => scrollToIndex(), 100);
-
+        setTimeout(() => {
+          scrollToIndex();
+          searchIndex(selectedId);
+        }, 100);
       }
-    }, [data, selectedId])
+    }, [data, selectedId, playbackObject])
   );
 
   const searchIndex = (selectedId) => {
     for (var i = 0; i <= data.length - 1; ++i) {
-
-      console.log('\n')
       if (selectedId == data[i]._id) {
+        console.log(i);
         setSongIndex(i);
         return i;
       }
@@ -132,34 +133,83 @@ const AudioPlayer = ({ navigation }) => {
     }
   }, [data]);
 
-  const scrollToIndex = () => {
+  const scrollToIndex = async () => {
+    var x = 0
     var songId = searchIndex(selectedId);
     console.log('songId:', songId);
-    // changeAudio(searchIndex(selectedId))
-    setSongIndex(songId)
+
+    if(songId == songIndex){
+      return
+    }
+    if (playbackObject != null) {
+      if (playbackObject._loaded == true) {
+        playbackObject.setOnPlaybackStatusUpdate(async () => {
+          if (playbackObject._loaded) {
+            var result = await playbackObject.getStatusAsync();
+            // console.log(playbackObject._loaded);
+            setCurrentTime(result.positionMillis);
+          }
+        });
+        try {
+          const status = await playbackObject.stopAsync();
+          await playbackObject.unloadAsync();
+          console.log('Audio has been unloaded');
+        } catch (error) {
+          console.log('ERROR: ', error);
+        }
+        setIsPlaying(false);
+        // setPlaybackStatus(status);
+        // setSoundStatus({ status: status, icon: 'ios-play-circle' });
+      }
+    }
+
     flatlistRef.current.scrollToIndex({ animated: true, index: songId });
+    // changeAudio(searchIndex(selectedId))
+    // setSongIndex(songId);
+    // if (playbackObject != null) {
+    //   const status2 = await playbackObject
+    //     .loadAsync({ uri: `${data[songId].url}.mp3` }, { shouldPlay: true })
+    //     .catch((e) => {
+    //       console.log('ERRRORRRRRRR', e);
+    //     });
+    //   setIsPlaying(true);
+    //   setPlaybackStatus(status2);
+    // }
     // swipeAudio(songId);
     // setSongIndex(songId);
   };
 
   const swipeAudio = async (songIndex) => {
     if (playbackObject != null) {
-      const status = await playbackObject.stopAsync();
-      try {
-        await playbackObject.unloadAsync();
-        console.log('Audio has been unloaded');
-      } catch (error) {
-        console.log('ERROR: ', error);
-      }
-      setIsPlaying(false);
-      setSoundStatus({ status: status, icon: 'ios-play-circle' });
-      const status2 = await playbackObject
-        .loadAsync({ uri: `${data[songIndex].url}.mp3` }, { shouldPlay: true })
-        .catch((e) => {
-          console.log(e);
+      if (playbackObject._loaded == true) {
+        playbackObject.setOnPlaybackStatusUpdate(async () => {
+          if (playbackObject._loaded) {
+            var result = await playbackObject.getStatusAsync();
+            // console.log(playbackObject._loaded);
+            setCurrentTime(result.positionMillis);
+          }
         });
-      setIsPlaying(true);
-      setPlaybackStatus(status2);
+        try {
+          const status = await playbackObject.stopAsync();
+          await playbackObject.unloadAsync();
+          console.log('Audio has been unloaded');
+        } catch (error) {
+          console.log('ERROR: ', error);
+        }
+        setIsPlaying(false);
+        // setPlaybackStatus(status);
+        // setSoundStatus({ status: status, icon: 'ios-play-circle' });
+      }
+      if (playbackObject._loading == false) {
+        const status2 = await playbackObject
+          .loadAsync({ uri: `${data[songIndex].url}.mp3` }, { shouldPlay: true })
+          .catch((e) => {
+            console.log(e);
+          });
+        console.log('SONGINDEX INSIDE', songIndex);
+        setIsPlaying(true);
+        setPlaybackStatus(status2);
+      }
     }
   };
 
@@ -174,11 +224,13 @@ const AudioPlayer = ({ navigation }) => {
         try {
           await playbackObject.unloadAsync();
           console.log('Audio has been unloaded');
+          setIsPlaying(false);
+          setPlaybackStatus(status);
         } catch (error) {
           console.log('ERROR: ', error);
         }
-        setIsPlaying(false);
-        setSoundStatus({ status: status, icon: 'ios-play-circle' });
+
+        // setSoundStatus({ status: status, icon: 'ios-play-circle' });
       }
       const status2 = await playbackObject
         .loadAsync({ uri: `${data[songIndexPara].url}.mp3` }, { shouldPlay: true })
@@ -203,21 +255,21 @@ const AudioPlayer = ({ navigation }) => {
         .catch((e) => {
           console.log(e);
         });
-        // new Audio.Sound().setOnPlaybackStatusUpdate
-        playbackObject.setOnPlaybackStatusUpdate(async () => {
-          if (playbackObject._loaded) {
-            var result = await playbackObject.getStatusAsync();
-            // console.log(playbackObject._loaded);
-            setCurrentTime(result.positionMillis);
-          }
-        });
-        
-        setIsPlaying(true);
-        return setPlaybackStatus(status);
-      }
-      // It will pause our audio
-      if (playbackStatus.isPlaying) {
-      console.log('songIndex', songIndex)
+      // new Audio.Sound().setOnPlaybackStatusUpdate
+      playbackObject.setOnPlaybackStatusUpdate(async () => {
+        if (playbackObject._loaded) {
+          var result = await playbackObject.getStatusAsync();
+          // console.log(playbackObject._loaded);
+          setCurrentTime(result.positionMillis);
+        }
+      });
+
+      setIsPlaying(true);
+      return setPlaybackStatus(status);
+    }
+    // It will pause our audio
+    if (playbackStatus.isPlaying) {
+      console.log('songIndex', songIndex);
       const status = await playbackObject.pauseAsync();
       setIsPlaying(false);
       return setPlaybackStatus(status);
@@ -233,7 +285,6 @@ const AudioPlayer = ({ navigation }) => {
 
   const skipToNext = async () => {
     if (songIndex > data.length - 2) {
-
       return;
     }
     setCurrentTime(0);
