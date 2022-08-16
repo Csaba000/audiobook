@@ -109,6 +109,13 @@ const AudioPlayer = ({ navigation }) => {
     }, [data, selectedId, playbackObject])
   );
 
+  // useEffect(() => {
+  //   if (data) {
+  //     var x = searchIndex(selectedId);
+  //     setSongIndex(x);
+  //   }
+  // }, [selectedId]);
+
   const searchIndex = (selectedId) => {
     for (var i = 0; i <= data.length - 1; ++i) {
       if (selectedId == data[i]._id) {
@@ -119,7 +126,6 @@ const AudioPlayer = ({ navigation }) => {
     }
   };
 
-  // searchIndex();
   //initialize audio
   useEffect(() => {
     if (data) {
@@ -134,15 +140,14 @@ const AudioPlayer = ({ navigation }) => {
   }, [data]);
 
   const scrollToIndex = async () => {
-    var x = 0
+    var x = 0;
     var songId = searchIndex(selectedId);
     console.log('songId:', songId);
 
-    if(songId == songIndex){
-      return
-    }
+    // setSongIndex(songId);
     if (playbackObject != null) {
       if (playbackObject._loaded == true) {
+        console.log('hello')
         playbackObject.setOnPlaybackStatusUpdate(async () => {
           if (playbackObject._loaded) {
             var result = await playbackObject.getStatusAsync();
@@ -150,6 +155,7 @@ const AudioPlayer = ({ navigation }) => {
             setCurrentTime(result.positionMillis);
           }
         });
+        setIsPlaying(false);
         try {
           const status = await playbackObject.stopAsync();
           await playbackObject.unloadAsync();
@@ -157,26 +163,22 @@ const AudioPlayer = ({ navigation }) => {
         } catch (error) {
           console.log('ERROR: ', error);
         }
-        setIsPlaying(false);
         // setPlaybackStatus(status);
         // setSoundStatus({ status: status, icon: 'ios-play-circle' });
       }
+      if (playbackObject._loading == false) {
+        const status2 = await playbackObject
+          .loadAsync({ uri: `${data[songIndex].url}.mp3` }, { shouldPlay: true })
+          .catch((e) => {
+            console.log(e);
+          });
+        console.log('SONGINDEX INSIDE SCROLL', songIndex, 'ID', songId);
+        setSongIndex(songId);
+        setIsPlaying(true);
+        setPlaybackStatus(status2);
+        flatlistRef.current.scrollToIndex({ animated: false, index: songId });
+      }
     }
-
-    flatlistRef.current.scrollToIndex({ animated: true, index: songId });
-    // changeAudio(searchIndex(selectedId))
-    // setSongIndex(songId);
-    // if (playbackObject != null) {
-    //   const status2 = await playbackObject
-    //     .loadAsync({ uri: `${data[songId].url}.mp3` }, { shouldPlay: true })
-    //     .catch((e) => {
-    //       console.log('ERRRORRRRRRR', e);
-    //     });
-    //   setIsPlaying(true);
-    //   setPlaybackStatus(status2);
-    // }
-    // swipeAudio(songId);
-    // setSongIndex(songId);
   };
 
   const swipeAudio = async (songIndex) => {
@@ -200,13 +202,14 @@ const AudioPlayer = ({ navigation }) => {
         // setPlaybackStatus(status);
         // setSoundStatus({ status: status, icon: 'ios-play-circle' });
       }
+      console.log('SONGINDEX INSIDE SWIPE', songIndex);
       if (playbackObject._loading == false) {
         const status2 = await playbackObject
           .loadAsync({ uri: `${data[songIndex].url}.mp3` }, { shouldPlay: true })
           .catch((e) => {
             console.log(e);
           });
-        console.log('SONGINDEX INSIDE', songIndex);
+        setSongIndex(songIndex);
         setIsPlaying(true);
         setPlaybackStatus(status2);
       }
