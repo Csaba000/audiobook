@@ -24,6 +24,7 @@ const HomeNavigator = ({ navigation }) => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <>
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen name="AudioPlayer" component={AudioPlayer} />
         <Stack.Screen
           name="DetailedBook"
           component={DetailedBook}
@@ -88,16 +89,16 @@ const MyTabs = () => (
       }}
     />
 
-    <Tab.Screen
+    {/* <Tab.Screen
       name="AudioPlayer"
       component={AudioPlayer}
       initialParams={{ selectedId: 0 }}
-      options={{
-        tabBarIcon: ({ color, size }) => (
-          <Ionicons name="musical-note" color={color} size={size} />
-        ),
-      }}
-    />
+      // options={{
+      //   tabBarIcon: ({ color, size }) => (
+      //     <Ionicons name="musical-note" color={color} size={size} />
+      //   ),
+      // }}
+    /> */}
 
     <Tab.Screen
       name="Profile"
