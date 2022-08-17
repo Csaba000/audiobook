@@ -4,26 +4,8 @@ import { BookItem } from '../components/BookItem';
 import { BookListHeader } from '../components/BookListHeader';
 import axios from 'axios';
 import { BACKEND_URL } from '../utils/constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../components/AuthProvider';
-import { LoginContext, LoginProvider } from '../components/IsLoggedIn';
-
-// export async function getToken() {
-
-//   // // let token = await AsyncStorage.getItem('token')
-//   // let obj = JSON.parse(token);
-//   // let tokenValue = obj.access_token;
-//   return token
-// }
-
-// export const getTokenFromStorage = async () => {
-//   const { token, setToken } = useContext(AuthContext);
-
-//   let tokenInStorage = await AsyncStorage.getItem('token');
-//   setToken(tokenInStorage)
-//   console.log(token)
-//   return tokenInStorage
-// }
+import { LoginContext } from '../components/IsLoggedIn';
 
 const headers = {
   headers: {
@@ -45,7 +27,6 @@ const HomeScreen = ({ navigation }) => {
         .get(`${BACKEND_URL}/books`, headers)
         .then(({ data }) => {
           setData(data);
-          
         })
         .catch((error) => alert('Server error: ', error))
         .finally(() => setLoading(false));
@@ -54,8 +35,6 @@ const HomeScreen = ({ navigation }) => {
       alert('Login token is not good');
     }
   }, []);
-
-  
 
   const renderItem = ({ item }) => {
     return (

@@ -7,11 +7,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '../utils/constants';
 import { AuthContext } from '../components/AuthProvider';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getTokenFromStorage } from './HomeScreen';
-import AudioPlayer from '../components/AudioPlayer';
 
-// import { getToken } from './HomeScreen';
+
 
 const headers = {
   headers: {
