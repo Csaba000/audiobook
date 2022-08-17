@@ -147,7 +147,6 @@ const AudioPlayer = ({ navigation }) => {
     // setSongIndex(songId);
     if (playbackObject != null) {
       if (playbackObject._loaded == true) {
-        console.log('hello')
         playbackObject.setOnPlaybackStatusUpdate(async () => {
           if (playbackObject._loaded) {
             var result = await playbackObject.getStatusAsync();
@@ -165,6 +164,23 @@ const AudioPlayer = ({ navigation }) => {
         }
         // setPlaybackStatus(status);
         // setSoundStatus({ status: status, icon: 'ios-play-circle' });
+      }
+      if (songIndex == 0) {
+        playbackObject.setOnPlaybackStatusUpdate(async () => {
+          if (playbackObject._loaded) {
+            var result = await playbackObject.getStatusAsync();
+            // console.log(playbackObject._loaded);
+            setCurrentTime(result.positionMillis);
+          }
+        });
+        setIsPlaying(false);
+        try {
+          const status = await playbackObject.stopAsync();
+          await playbackObject.unloadAsync();
+          console.log('Audio has been unloaded');
+        } catch (error) {
+          console.log('ERROR: ', error);
+        }
       }
       if (playbackObject._loading == false) {
         const status2 = await playbackObject
