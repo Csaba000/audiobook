@@ -142,7 +142,7 @@ export const Nav = () => {
           {playbackObject ? (
 
             <AudioPlayerModal></AudioPlayerModal>
-            ):<View></View>} 
+            ):<View/>} 
         </>
       ) : (
         <Stack.Navigator screenOptions={{ headerShown: false }}>

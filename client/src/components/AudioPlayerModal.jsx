@@ -8,44 +8,36 @@ import {
   StyleSheet,
   Dimensions
 } from 'react-native';
+import { useContext, useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { useRoute, useEffect } from '@react-navigation/native';
+import { AudioContext } from './AudioProvider';
+import { CurrentAudio } from './CurrentAudioProvider';
+import AudioPlayer from './AudioPlayer';
 import axios from 'axios';
 
-export const AudioPlayerModal = ({navigation }) => {
-  const route = useRoute();
-  const { id } = route.params;
-  console.log(id)
-  useEffect(() => {
-    if (token) {
-      headers.headers.Authorization = `Bearer ${token}`;
-      axios
-        .get(`${BACKEND_URL}/books/${id}`, headers)
-        .then(({ data }) => {
-          console.log(data);
-          setData(data);
-        })
-        .catch((error) => console.log('Server error', error))
-        .finally(() => setLoading(false));
-    } else {
-      console.log('Invalid token');
-    }
-  }, []);
+
+export const AudioPlayerModal = ({ navigation }) => {
+  // const route = useRoute();
+  const { playbackObject, setPlaybackObject } = useContext(AudioContext);
+  const { currentAudio, setCurrentAudio } = useContext(CurrentAudio);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playbackStatus, setPlaybackStatus] = useState(null);
+  const [currentTime, setCurrentTime] = useState();
 
   return (
     <View style={styles.mainContainer}>
       <Image
         style={styles.logoImage}
         source={{
-          uri: 'https://img.freepik.com/free-photo/grunge-paint-background_1409-1337.jpg?w=2000'
+          uri: `${currentAudio !=null ? currentAudio.data.url : 'loading'}.jpg`
         }}
       />
       <View style={styles.textContainer}>
         <Text style={styles.title} numberOfLines={1}>
-          ASLDKSA:LDKA:DKA:DLKSAD:LKSAKLDJASLKJ
+        {currentAudio !=null ? currentAudio.data.title : 'loading'}
         </Text>
         <Text style={styles.author} numberOfLines={1}>
-          ASDJNSALJDALSKJDSALKAuthor
+        {currentAudio !=null ? currentAudio.data.author : 'loading'}
         </Text>
       </View>
       <Ionicons
@@ -65,7 +57,7 @@ export const AudioPlayerModal = ({navigation }) => {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    bottom: 118,
+    // bottom: 118,
     flexDirection: 'row',
     justifyContent: 'space-around',
     // borderRadius: 10,

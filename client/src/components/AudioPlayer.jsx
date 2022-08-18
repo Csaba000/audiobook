@@ -7,7 +7,7 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
-  Animated,
+  Animated
 } from 'react-native';
 import { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { useRoute, useFocusEffect } from '@react-navigation/native';
@@ -20,10 +20,11 @@ import { Audio } from 'expo-av';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 import { AuthContext } from './AuthProvider';
 import { AudioContext } from './AudioProvider';
+import { CurrentAudio } from './CurrentAudioProvider';
 
 const { width, height } = Dimensions.get('window');
 
-const AudioPlayer = ({ navigation }) => {
+export const AudioPlayer = ({ navigation }) => {
   const flatlistRef = useRef(null);
   const scrollX = useRef(new Animated.Value(0)).current;
   const [songIndex, setSongIndex] = useState(0);
@@ -32,6 +33,7 @@ const AudioPlayer = ({ navigation }) => {
   const [isLoading, setLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const { playbackObject, setPlaybackObject } = useContext(AudioContext);
+  const { currentAudio, setCurrentAudio } = useContext(CurrentAudio);
   const [playbackStatus, setPlaybackStatus] = useState(null);
   const [currentTime, setCurrentTime] = useState();
   const route = useRoute();
@@ -130,7 +132,7 @@ const AudioPlayer = ({ navigation }) => {
           staysActiveInBackground: true,
           playsInSilentModeIOS: true,
           shouldDuckAndroid: true,
-          playThroughEarpieceAndroid: false,
+          playThroughEarpieceAndroid: false
         });
         console.log('initialized');
       }
@@ -196,13 +198,18 @@ const AudioPlayer = ({ navigation }) => {
           }
         }
       }
+
       if (playbackObject._loading == false) {
+        console.log(data[songIndex]);
         const status2 = await playbackObject
-          .loadAsync({ uri: `${data[songIndex].url}.mp3` }, { shouldPlay: true })
+          .loadAsync(
+            { uri: `${data[songIndex].url}.mp3` },
+            { shouldPlay: true }
+          )
           .catch((e) => {
             console.log(e);
           });
-
+        setCurrentAudio({ data: data[songIndex], index: songIndex });
         setSongIndex(songId);
         setIsPlaying(true);
         setPlaybackStatus(status2);
@@ -231,10 +238,15 @@ const AudioPlayer = ({ navigation }) => {
       }
       if (playbackObject._loading == false) {
         const status2 = await playbackObject
-          .loadAsync({ uri: `${data[songIndex].url}.mp3` }, { shouldPlay: true })
+          .loadAsync(
+            { uri: `${data[songIndex].url}.mp3` },
+            { shouldPlay: true }
+          )
           .catch((e) => {
             console.log(e);
           });
+        setCurrentAudio({ data: data[songIndex], index: songIndex });
+
         setSongIndex(songIndex);
         setIsPlaying(true);
         setPlaybackStatus(status2);
@@ -260,10 +272,15 @@ const AudioPlayer = ({ navigation }) => {
         }
       }
       const status2 = await playbackObject
-        .loadAsync({ uri: `${data[songIndexPara].url}.mp3` }, { shouldPlay: true })
+        .loadAsync(
+          { uri: `${data[songIndexPara].url}.mp3` },
+          { shouldPlay: true }
+        )
         .catch((e) => {
           console.log('ERROR', e);
         });
+      setCurrentAudio({ data: data[songIndex], index: songIndex });
+
       setIsPlaying(true);
       setPlaybackStatus(status2);
     }
@@ -276,6 +293,7 @@ const AudioPlayer = ({ navigation }) => {
         .catch((e) => {
           console.log(e);
         });
+      setCurrentAudio({ data: data[songIndex], index: songIndex });
 
       playbackObject.setOnPlaybackStatusUpdate(async () => {
         if (playbackObject._loaded) {
@@ -312,7 +330,7 @@ const AudioPlayer = ({ navigation }) => {
     setSongIndex(nextSongIndex);
 
     await flatlistRef.current.scrollToOffset({
-      offset: nextSongIndex * width,
+      offset: nextSongIndex * width
     });
 
     changeAudio(nextSongIndex);
@@ -328,7 +346,7 @@ const AudioPlayer = ({ navigation }) => {
     setSongIndex(previousSongIndex);
 
     flatlistRef.current.scrollToOffset({
-      offset: previousSongIndex * width,
+      offset: previousSongIndex * width
     });
 
     changeAudio(previousSongIndex);
@@ -338,7 +356,10 @@ const AudioPlayer = ({ navigation }) => {
     return (
       <Animated.View style={styles.flatListContainer}>
         <View style={styles.wrapImage}>
-          <Image style={styles.logoImage} source={{ uri: `${item.url}.jpg` }}></Image>
+          <Image
+            style={styles.logoImage}
+            source={{ uri: `${item.url}.jpg` }}
+          ></Image>
         </View>
 
         <View style={{ top: 40 }}>
@@ -378,9 +399,9 @@ const AudioPlayer = ({ navigation }) => {
             [
               {
                 nativeEvent: {
-                  contentOffset: { x: scrollX },
-                },
-              },
+                  contentOffset: { x: scrollX }
+                }
+              }
             ],
             { useNativeDriver: false }
           )}
@@ -454,66 +475,66 @@ export default AudioPlayer;
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#391B45',
+    backgroundColor: '#391B45'
   },
   wrapImage: {
     width: 300,
     height: 340,
     elevation: 10,
-    marginBottom: 25,
+    marginBottom: 25
   },
   flatListContainer: {
     width: width,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   logoImage: {
     marginTop: 50,
     width: '100%',
     height: '100%',
-    borderRadius: 15,
+    borderRadius: 15
   },
   sliderContainer: {
     width: 350,
     height: 40,
     marginTop: 25,
     bottom: 85,
-    flexDirection: 'row',
+    flexDirection: 'row'
   },
   progressLabelContainer: {
     bottom: 70,
     width: 340,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   progressLabelText: {
     top: 140,
-    color: 'white',
+    color: 'white'
   },
   musicControls: {
     flexDirection: 'row',
     width: '60%',
     marginTop: 15,
     bottom: 65,
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   title: {
     marginBottom: 80,
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',
-    color: '#EEEEEE',
+    color: '#EEEEEE'
   },
   author: {
     bottom: 70,
     color: '#d6cece',
     fontSize: 16,
     fontWeight: '300',
-    textAlign: 'center',
+    textAlign: 'center'
   },
   mainContainer: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-  },
+    justifyContent: 'center'
+  }
 });
