@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TouchableNativeFeedback } from 'react-native';
+import { TouchableNativeFeedback, View, ScrollView, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,6 +15,8 @@ import { LoginContext } from '../components/IsLoggedIn';
 import { AuthContext } from '../components/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AudioPlayer from '../components/AudioPlayer';
+import AudioPlayerModal from '../components/AudioPlayerModal';
+import { AudioContext } from '../components/AudioProvider';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -35,12 +37,17 @@ const HomeNavigator = ({ navigation }) => {
                   navigation.navigate('HomeScreen');
                 }}
               >
-                <Ionicons name="arrow-back" size={32} style={{ padding: 10 }} color={'white'} />
+                <Ionicons
+                  name="arrow-back"
+                  size={32}
+                  style={{ padding: 10 }}
+                  color={'white'}
+                />
               </TouchableNativeFeedback>
             ),
             headerShown: true,
             title: 'Back',
-            headerStyle: { backgroundColor: '#23042F' },
+            headerStyle: { backgroundColor: '#23042F' }
           }}
         />
       </>
@@ -50,7 +57,9 @@ const HomeNavigator = ({ navigation }) => {
 
 const MyTabs = () => (
   <Tab.Navigator
+    // tabBar={props => <AudioPlayerModal {...props}></AudioPlayerModal>}
     screenOptions={{
+      tabBarComponent: true,
       headerShown: false,
       tabBarHideOnKeyboard: true,
       tabBarInactiveTintColor: '#62466D',
@@ -59,24 +68,28 @@ const MyTabs = () => (
       tabBarStyle: [
         {
           backgroundColor: '#23042F',
-          display: 'flex',
+          display: 'flex'
         },
-        null,
-      ],
+        null
+      ]
     }}
   >
     <Tab.Screen
       name="Home"
       component={HomeNavigator}
       options={{
-        tabBarIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} />,
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name="home" color={color} size={size} />
+        )
       }}
     />
     <Tab.Screen
       name="MyBooks"
       component={MyBooksScreen}
       options={{
-        tabBarIcon: ({ color, size }) => <Ionicons name="book-outline" color={color} size={size} />,
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name="book-outline" color={color} size={size} />
+        )
       }}
     />
     <Tab.Screen
@@ -85,20 +98,9 @@ const MyTabs = () => (
       options={{
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="heart-outline" color={color} size={size} />
-        ),
+        )
       }}
     />
-
-    {/* <Tab.Screen
-      name="AudioPlayer"
-      component={AudioPlayer}
-      initialParams={{ selectedId: 0 }}
-      // options={{
-      //   tabBarIcon: ({ color, size }) => (
-      //     <Ionicons name="musical-note" color={color} size={size} />
-      //   ),
-      // }}
-    /> */}
 
     <Tab.Screen
       name="Profile"
@@ -106,7 +108,7 @@ const MyTabs = () => (
       options={{
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="person-outline" color={color} size={size} />
-        ),
+        )
       }}
     />
   </Tab.Navigator>
@@ -128,13 +130,20 @@ const checkToken = async () => {
 export const Nav = () => {
   const { isLoggedIn, setIsLoggedIn } = React.useContext(LoginContext);
   const { token, setToken } = React.useContext(AuthContext);
+  const { playbackObject } = React.useContext(AudioContext);
 
   checkToken();
 
   return (
     <NavigationContainer theme={DarkTheme}>
       {isLoggedIn ? (
-        <MyTabs />
+        <>
+          <MyTabs></MyTabs>
+          {playbackObject ? (
+
+            <AudioPlayerModal></AudioPlayerModal>
+            ):<View></View>} 
+        </>
       ) : (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <>

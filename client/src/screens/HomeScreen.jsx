@@ -1,17 +1,24 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { SafeAreaView, FlatList, StyleSheet, StatusBar, Dimensions } from 'react-native';
+import {
+  SafeAreaView,
+  FlatList,
+  StyleSheet,
+  StatusBar,
+  Dimensions
+} from 'react-native';
 import { BookItem } from '../components/BookItem';
 import { BookListHeader } from '../components/BookListHeader';
 import axios from 'axios';
 import { BACKEND_URL } from '../utils/constants';
 import { AuthContext } from '../components/AuthProvider';
 import { LoginContext } from '../components/IsLoggedIn';
+import AudioPlayerModal from '../components/AudioPlayerModal';
 
 const headers = {
   headers: {
     'Content-Type': 'application/json',
-    Authorization: '',
-  },
+    Authorization: ''
+  }
 };
 
 const HomeScreen = ({ navigation }) => {
@@ -75,8 +82,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#391B45',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-  },
+    justifyContent: 'center'
+  }
 });
 
 export default HomeScreen;
