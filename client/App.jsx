@@ -3,12 +3,15 @@ import 'react-native-gesture-handler';
 import { Nav } from './src/screens/NavigationComp';
 import { LoginProvider } from './src/components/IsLoggedIn';
 import { AuthProvider } from './src/components/AuthProvider';
+import { AudioProvider } from './src/components/AudioProvider';
 
 const App = () => {
   return (
     <AuthProvider>
       <LoginProvider>
-        <Nav />
+        <AudioProvider>
+          <Nav />
+        </AudioProvider>
       </LoginProvider>
     </AuthProvider>
   );
