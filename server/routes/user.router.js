@@ -4,36 +4,13 @@ import * as userController from "../controllers/user.controller.js";
 const router = express.Router();
 
 router.get("/:id", userController.userListerById);
+router.post("/currentUser", userController.currentUser);
 router.post("/login", userController.login);
 router.post("/register", userController.register);
-
-export default router;
-
-//     // save the new user
-//     user
-//       .save()
-//       // return success if the new user is added to the database successfully
-//       .then((result) => {
-//         response.status(201).send({
-//           message: "User Created Successfully",
-//           result,
-//         });
-//       })
-//       // catch error if the new user wasn't added successfully to the database
-//       .catch((error) => {
-//         response.status(500).send({
-//           message: "Error creating user",
-//           error,
-//         });
-//       });
-//   });
-//   // catch error if the password hash isn't successful
-//   //   .catch((e) => {
-//   //     response.status(500).send({
-//   //       message: "Password was not hashed successfully",
-//   //       e,
-//   //     });
-//   //   });
-// });
+router.post("/listFavorites", userController.listFavorites);
+router.post("/favorites", userController.addToFavorites);
+router.post("/removeFromFavorites", userController.removeFromFavorites);
+router.post("/passwordChange", userController.changePassword);
+router.post("/emailChange", userController.changeEmail);
 
 export default router;
