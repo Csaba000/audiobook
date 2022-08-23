@@ -3,15 +3,12 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const AudioBookSchema = new Schema({
-  coverUrl: String,
+  url: String,
   title: String,
   author: String,
   description: String,
   lengthInSeconds: Number,
-  chapter: {
-    title: String,
-    url: String,
-  },
+  category: String,
 });
 const bookSchema = mongoose.model("Audio_Book", AudioBookSchema);
 
