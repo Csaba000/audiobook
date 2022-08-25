@@ -21,23 +21,31 @@ import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 import { AuthContext } from './AuthProvider';
 import { AudioContext } from './AudioProvider';
 import { CurrentAudio } from './CurrentAudioProvider';
+import { AudioDisplayContext } from './AudioDisplayProvider';
 
 const { width, height } = Dimensions.get('window');
 
 export const AudioPlayer = ({ navigation }) => {
   const flatlistRef = useRef(null);
   const scrollX = useRef(new Animated.Value(0)).current;
-  const [songIndex, setSongIndex] = useState(0);
+  // const [stateCurrentIndex, setStateCurrentIndex] = useState(0);
   const [data, setData] = useState(null);
   const { token } = useContext(AuthContext);
   const [isLoading, setLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const { playbackObject, setPlaybackObject } = useContext(AudioContext);
-  const { currentAudio, setCurrentAudio } = useContext(CurrentAudio);
+
+  const { currentAudio, currentIndex } = useContext(CurrentAudio);
+  const [stateCurrentAudio, setStateCurrentAudio] = currentAudio;
+  const [stateCurrentIndex, setStateCurrentIndex] = currentIndex;
+
+  const { audioDisplay, setAudioDisplay } = useContext(AudioDisplayContext);
   const [playbackStatus, setPlaybackStatus] = useState(null);
   const [currentTime, setCurrentTime] = useState();
   const route = useRoute();
-  const { selectedId } = route.params;
+  const { selectedId } = route ? route.params : 0;
+
+  //mindent context-be, kulon fuggvenyek a mini-nek, s a nagynak
 
   //token
   useEffect(() => {
@@ -62,7 +70,7 @@ export const AudioPlayer = ({ navigation }) => {
       scrollX.addListener(async ({ value }) => {
         const indexNew = Math.round(value / width);
         if (x != indexNew) {
-          setSongIndex(indexNew);
+          setStateCurrentIndex(indexNew);
           swipeAudio(indexNew);
           x = indexNew;
         }
@@ -73,6 +81,7 @@ export const AudioPlayer = ({ navigation }) => {
     };
   }, [data, playbackObject]);
 
+  //mas screen
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', async () => {
       if (playbackObject != null) {
@@ -92,13 +101,17 @@ export const AudioPlayer = ({ navigation }) => {
     useCallback(() => {
       if (data) {
         setTimeout(() => {
-          scrollToIndex();
+          // console.log('AudioTRUE VAGY FALSE', audioDisplay);
+          // if (!audioDisplay) {
+            scrollToIndex();
+          // }
           searchIndex(selectedId);
         }, 100);
       }
-    }, [data, selectedId, playbackObject])
+    }, [playbackObject])
   );
 
+  //valami
   useEffect(() => {
     if (data) {
       if (playbackObject != null && playbackObject._loaded == true) {
@@ -112,7 +125,7 @@ export const AudioPlayer = ({ navigation }) => {
           }
         };
         var x = searchIndex(selectedId);
-        if (x == songIndex) {
+        if (x == stateCurrentIndex) {
           return;
         } else {
           status();
@@ -139,6 +152,8 @@ export const AudioPlayer = ({ navigation }) => {
     }
   }, [data]);
 
+  useEffect(() => {}, [playbackObject]);
+
   function millisToMinutesAndSeconds(millis) {
     var minutes = Math.floor(millis / 60000);
     var seconds = ((millis % 60000) / 1000).toFixed(0);
@@ -148,15 +163,19 @@ export const AudioPlayer = ({ navigation }) => {
   const searchIndex = (selectedId) => {
     for (var i = 0; i <= data.length - 1; ++i) {
       if (selectedId == data[i]._id) {
-        setSongIndex(i);
+        setStateCurrentIndex(i);
         return i;
       }
     }
+    return 0;
   };
 
   const scrollToIndex = async () => {
     var x = 0;
+
     var songId = searchIndex(selectedId);
+    console.log(selectedId);
+
     if (playbackObject != null) {
       if (playbackObject._loaded == true) {
         playbackObject.setOnPlaybackStatusUpdate(async () => {
@@ -179,7 +198,7 @@ export const AudioPlayer = ({ navigation }) => {
         }
       }
 
-      if (songIndex == 0) {
+      if (stateCurrentIndex == 0) {
         playbackObject.setOnPlaybackStatusUpdate(async () => {
           if (playbackObject._loaded) {
             var result = await playbackObject.getStatusAsync();
@@ -200,19 +219,21 @@ export const AudioPlayer = ({ navigation }) => {
       }
 
       if (playbackObject._loading == false) {
-        console.log(data[songIndex]);
+        console.log(data[stateCurrentIndex]);
         const status2 = await playbackObject
           .loadAsync(
-            { uri: `${data[songIndex].url}.mp3` },
+            { uri: `${data[stateCurrentIndex].url}.mp3` },
             { shouldPlay: true }
           )
           .catch((e) => {
             console.log(e);
           });
-        setCurrentAudio({ data: data[songIndex], index: songIndex });
-        setSongIndex(songId);
+        setStateCurrentAudio(data[stateCurrentIndex]);
+        setStateCurrentIndex(songId);
         setIsPlaying(true);
         setPlaybackStatus(status2);
+
+        console.log('ITT EZ AZ', songId);
         flatlistRef.current.scrollToIndex({ animated: false, index: songId });
       }
     }
@@ -245,9 +266,9 @@ export const AudioPlayer = ({ navigation }) => {
           .catch((e) => {
             console.log(e);
           });
-        setCurrentAudio({ data: data[songIndex], index: songIndex });
+        setStateCurrentAudio(data[songIndex]);
 
-        setSongIndex(songIndex);
+        setStateCurrentIndex(songIndex);
         setIsPlaying(true);
         setPlaybackStatus(status2);
       }
@@ -255,7 +276,7 @@ export const AudioPlayer = ({ navigation }) => {
   };
 
   const changeAudio = async (songIndexPara) => {
-    var oldIndex = songIndex;
+    var oldIndex = stateCurrentIndex;
 
     if (oldIndex != songIndexPara) {
       oldIndex = songIndexPara;
@@ -279,7 +300,8 @@ export const AudioPlayer = ({ navigation }) => {
         .catch((e) => {
           console.log('ERROR', e);
         });
-      setCurrentAudio({ data: data[songIndex], index: songIndex });
+
+      setStateCurrentAudio(data[stateCurrentIndex]);
 
       setIsPlaying(true);
       setPlaybackStatus(status2);
@@ -289,11 +311,14 @@ export const AudioPlayer = ({ navigation }) => {
   const handleAudioPlayPause = async () => {
     if (playbackObject !== null && playbackStatus === null) {
       const status = await playbackObject
-        .loadAsync({ uri: `${data[songIndex].url}.mp3` }, { shouldPlay: true })
+        .loadAsync(
+          { uri: `${data[stateCurrentIndex].url}.mp3` },
+          { shouldPlay: true }
+        )
         .catch((e) => {
           console.log(e);
         });
-      setCurrentAudio({ data: data[songIndex], index: songIndex });
+      setStateCurrentAudio(data[songIndex]);
 
       playbackObject.setOnPlaybackStatusUpdate(async () => {
         if (playbackObject._loaded) {
@@ -321,13 +346,13 @@ export const AudioPlayer = ({ navigation }) => {
   };
 
   const skipToNext = async () => {
-    if (songIndex > data.length - 2) {
+    if (stateCurrentIndex > data.length - 2) {
       return;
     }
     setCurrentTime(0);
 
-    var nextSongIndex = songIndex + 1;
-    setSongIndex(nextSongIndex);
+    var nextSongIndex = stateCurrentIndex + 1;
+    setStateCurrentIndex(nextSongIndex);
 
     await flatlistRef.current.scrollToOffset({
       offset: nextSongIndex * width
@@ -337,13 +362,13 @@ export const AudioPlayer = ({ navigation }) => {
   };
 
   const skipToPrevious = async () => {
-    if (songIndex - 1 < 0) {
+    if (stateCurrentIndex - 1 < 0) {
       return;
     }
     setCurrentTime(0);
 
-    var previousSongIndex = songIndex - 1;
-    setSongIndex(previousSongIndex);
+    var previousSongIndex = stateCurrentIndex - 1;
+    setStateCurrentIndex(previousSongIndex);
 
     flatlistRef.current.scrollToOffset({
       offset: previousSongIndex * width
@@ -470,6 +495,7 @@ export const AudioPlayer = ({ navigation }) => {
     </SafeAreaView>
   );
 };
+
 export default AudioPlayer;
 
 const styles = StyleSheet.create({
@@ -536,5 +562,42 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center'
+  }
+});
+
+const styles2 = StyleSheet.create({
+  mainContainer: {
+    bottom: 0,
+    position: 'absolute',
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    // borderRadius: 10,
+    alignContent: 'center',
+    backgroundColor: '#62466D',
+    padding: 10
+    // marginVertical: 8,
+    // marginHorizontal: 16,
+    // top: 8
+  },
+  buttons: {
+    color: 'white'
+  },
+  textContainer: {
+    padding: 5,
+    flexDirection: 'column',
+    width: 100
+  },
+  logoImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 100
+  },
+  title: {
+    fontWeight: 'bold',
+    color: 'white'
+  },
+  author: {
+    color: 'white'
   }
 });

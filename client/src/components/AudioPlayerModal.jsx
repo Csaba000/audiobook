@@ -12,32 +12,32 @@ import { useContext, useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { AudioContext } from './AudioProvider';
 import { CurrentAudio } from './CurrentAudioProvider';
+import { CurrentAudioProvider } from './CurrentAudioProvider';
 import AudioPlayer from './AudioPlayer';
 import axios from 'axios';
-
 
 export const AudioPlayerModal = ({ navigation }) => {
   // const route = useRoute();
   const { playbackObject, setPlaybackObject } = useContext(AudioContext);
-  const { currentAudio, setCurrentAudio } = useContext(CurrentAudio);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [playbackStatus, setPlaybackStatus] = useState(null);
-  const [currentTime, setCurrentTime] = useState();
+  
+  const { currentAudio, currentIndex } = useContext(CurrentAudio);
+  const [stateCurrentAudio, setStateCurrentAudio] = currentAudio;
+  const [stateCurrentIndex, setStateCurrentIndex] = currentIndex;
 
   return (
     <View style={styles.mainContainer}>
       <Image
         style={styles.logoImage}
         source={{
-          uri: `${currentAudio !=null ? currentAudio.data.url : 'loading'}.jpg`
+          uri: `${stateCurrentAudio != null ? stateCurrentAudio.url : 'loading'}.jpg`
         }}
       />
       <View style={styles.textContainer}>
         <Text style={styles.title} numberOfLines={1}>
-        {currentAudio !=null ? currentAudio.data.title : 'loading'}
+          {stateCurrentAudio != null ? stateCurrentAudio.title : 'loading'}
         </Text>
         <Text style={styles.author} numberOfLines={1}>
-        {currentAudio !=null ? currentAudio.data.author : 'loading'}
+          {stateCurrentAudio != null ? stateCurrentAudio.author : 'loading'}
         </Text>
       </View>
       <Ionicons
@@ -57,7 +57,9 @@ export const AudioPlayerModal = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    // bottom: 118,
+    bottom: 0,
+    position: 'absolute',
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-around',
     // borderRadius: 10,

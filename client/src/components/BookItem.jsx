@@ -1,9 +1,28 @@
-import React, { useState } from 'react';
-import { View, Text, Image, TouchableNativeFeedback, StyleSheet } from 'react-native';
+import React, { useState, useContext } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  TouchableNativeFeedback,
+  StyleSheet
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { CurrentAudio } from '../components/CurrentAudioProvider';
+import { AudioContext } from '../components/AudioProvider';
+import AudioPlayerModal from './AudioPlayerModal';
 
-export const BookItem = ({ title, description, url, author, navigation, lengthInSeconds, id }) => {
+export const BookItem = ({
+  title,
+  description,
+  url,
+  author,
+  navigation,
+  lengthInSeconds,
+  id
+}) => {
   const [iconName, setIconName] = useState('heart-outline');
+  const { playbackObject, setPlaybackObject } = useContext(AudioContext);
+  const { currentAudio, setCurrentAudio } = useContext(CurrentAudio);
 
   return (
     <TouchableNativeFeedback
@@ -70,44 +89,44 @@ const styles = StyleSheet.create({
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
-    top: 8,
+    top: 8
   },
   title: {
     marginRight: 25,
     color: 'white',
     paddingLeft: 8,
     fontSize: 17,
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   author: {
     color: 'white',
     paddingLeft: 8,
-    fontSize: 12,
+    fontSize: 12
   },
   description: {
     color: 'white',
     padding: 10,
     fontSize: 12.3,
-    flexShrink: 1,
+    flexShrink: 1
   },
   logoImage: {
     width: 100,
     height: 100,
-    borderRadius: 100,
+    borderRadius: 100
   },
   viewContainer: {
     flexDirection: 'column',
-    flexShrink: 1,
+    flexShrink: 1
   },
   favoriteIcon: {
     alignSelf: 'flex-end',
     marginTop: -5,
-    position: 'absolute',
+    position: 'absolute'
   },
   durationText: {
     fontSize: 10,
     color: 'white',
     flexShrink: 1,
-    paddingLeft: 10,
-  },
+    paddingLeft: 10
+  }
 });

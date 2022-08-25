@@ -4,7 +4,8 @@ import {
   FlatList,
   StyleSheet,
   StatusBar,
-  Dimensions
+  Dimensions,
+  View
 } from 'react-native';
 import { BookItem } from '../components/BookItem';
 import { BookListHeader } from '../components/BookListHeader';
@@ -13,6 +14,8 @@ import { BACKEND_URL } from '../utils/constants';
 import { AuthContext } from '../components/AuthProvider';
 import { LoginContext } from '../components/IsLoggedIn';
 import AudioPlayerModal from '../components/AudioPlayerModal';
+import { CurrentAudio } from '../components/CurrentAudioProvider';
+import { AudioContext } from '../components/AudioProvider';
 
 const headers = {
   headers: {
@@ -26,6 +29,9 @@ const HomeScreen = ({ navigation }) => {
   const [data, setData] = useState([]);
   const { token, setToken } = useContext(AuthContext);
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+  const { playbackObject, setPlaybackObject } = useContext(AudioContext);
+  const { currentAudio, setCurrentAudio } = useContext(CurrentAudio);
+  
 
   useEffect(() => {
     if (token) {
@@ -71,7 +77,13 @@ const HomeScreen = ({ navigation }) => {
         }}
         stickyHeaderIndices={[0]}
       ></FlatList>
+       {playbackObject != null ? (
+        <AudioPlayerModal></AudioPlayerModal>
+      ) : (
+        <View></View>
+      )}
     </SafeAreaView>
+    
   );
 };
 

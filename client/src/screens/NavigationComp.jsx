@@ -1,4 +1,10 @@
-import * as React from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useCallback
+} from 'react';
 import { TouchableNativeFeedback, View, ScrollView, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -17,6 +23,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AudioPlayer from '../components/AudioPlayer';
 import AudioPlayerModal from '../components/AudioPlayerModal';
 import { AudioContext } from '../components/AudioProvider';
+import { AudioDisplayContext } from '../components/AudioDisplayProvider';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -26,6 +33,7 @@ const HomeNavigator = ({ navigation }) => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <>
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
+
         <Stack.Screen name="AudioPlayer" component={AudioPlayer} />
         <Stack.Screen
           name="DetailedBook"
@@ -55,64 +63,65 @@ const HomeNavigator = ({ navigation }) => {
   );
 };
 
-const MyTabs = () => (
-  <Tab.Navigator
-    // tabBar={props => <AudioPlayerModal {...props}></AudioPlayerModal>}
-    screenOptions={{
-      tabBarComponent: true,
-      headerShown: false,
-      tabBarHideOnKeyboard: true,
-      tabBarInactiveTintColor: '#62466D',
-      tabBarActiveTintColor: 'white',
-      tabBarShowLabel: false,
-      tabBarStyle: [
-        {
-          backgroundColor: '#23042F',
-          display: 'flex'
-        },
-        null
-      ]
-    }}
-  >
-    <Tab.Screen
-      name="Home"
-      component={HomeNavigator}
-      options={{
-        tabBarIcon: ({ color, size }) => (
-          <Ionicons name="home" color={color} size={size} />
-        )
+const MyTabs = () => {
+  return (
+    <Tab.Navigator
+      // tabBar={props => <AudioPlayerModal {...props}></AudioPlayerModal>}
+      screenOptions={{
+        tabBarComponent: true,
+        headerShown: false,
+        tabBarHideOnKeyboard: true,
+        tabBarInactiveTintColor: '#62466D',
+        tabBarActiveTintColor: 'white',
+        tabBarShowLabel: false,
+        tabBarStyle: [
+          {
+            backgroundColor: '#23042F',
+            display: 'flex'
+          },
+          null
+        ]
       }}
-    />
-    <Tab.Screen
-      name="MyBooks"
-      component={MyBooksScreen}
-      options={{
-        tabBarIcon: ({ color, size }) => (
-          <Ionicons name="book-outline" color={color} size={size} />
-        )
-      }}
-    />
-    <Tab.Screen
-      name="Favorites"
-      component={FavoritesScreen}
-      options={{
-        tabBarIcon: ({ color, size }) => (
-          <Ionicons name="heart-outline" color={color} size={size} />
-        )
-      }}
-    />
-
-    <Tab.Screen
-      name="Profile"
-      component={ProfilScreen}
-      options={{
-        tabBarIcon: ({ color, size }) => (
-          <Ionicons name="person-outline" color={color} size={size} />
-        )
-      }}
-    />
-  </Tab.Navigator>
-);
+    >
+      <Tab.Screen
+        name="Home"
+        component={HomeNavigator}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home" color={color} size={size} />
+          )
+        }}
+      />
+      <Tab.Screen
+        name="MyBooks"
+        component={MyBooksScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="book-outline" color={color} size={size} />
+          )
+        }}
+      />
+      <Tab.Screen
+        name="Favorites"
+        component={FavoritesScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="heart-outline" color={color} size={size} />
+          )
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfilScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-outline" color={color} size={size} />
+          )
+        }}
+      />
+    </Tab.Navigator>
+  );
+};
 
 const checkToken = async () => {
   const { isLoggedIn, setIsLoggedIn } = React.useContext(LoginContext);
@@ -135,15 +144,10 @@ export const Nav = () => {
   checkToken();
 
   return (
+    // <View>
     <NavigationContainer theme={DarkTheme}>
       {isLoggedIn ? (
-        <>
-          <MyTabs></MyTabs>
-          {playbackObject ? (
-
-            <AudioPlayerModal></AudioPlayerModal>
-            ):<View/>} 
-        </>
+        <MyTabs></MyTabs>
       ) : (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <>
@@ -154,5 +158,6 @@ export const Nav = () => {
         </Stack.Navigator>
       )}
     </NavigationContainer>
+    // </View>
   );
 };
