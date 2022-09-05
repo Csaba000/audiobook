@@ -14,15 +14,85 @@ import { AudioContext } from './AudioProvider';
 import { CurrentAudio } from './CurrentAudioProvider';
 import { CurrentAudioProvider } from './CurrentAudioProvider';
 import AudioPlayer from './AudioPlayer';
+import { AuthContext } from './AuthProvider';
+import { headers } from '../utils/constants';
+import { BACKEND_URL } from '../utils/constants';
 import axios from 'axios';
 
 export const AudioPlayerModal = ({ navigation }) => {
   // const route = useRoute();
-  const { playbackObject, setPlaybackObject } = useContext(AudioContext);
+  // const [statePlaybackStatus, setStatePlaybackStatus] = useState(null);
+  // const [stateIsPlaying, setStateIsPlaying] = useState(false);
+  // const [stateCurrentTime, setStateCurrentTime] = useState();
+
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState(null);
   
-  const { currentAudio, currentIndex } = useContext(CurrentAudio);
+  const { playbackObject, setPlaybackObject } = useContext(AudioContext);
+  const { token } = useContext(AuthContext);
+
+   const { currentAudio, currentIndex, isPlaying, playbackStatus, currentTime } = useContext(CurrentAudio);
+
   const [stateCurrentAudio, setStateCurrentAudio] = currentAudio;
   const [stateCurrentIndex, setStateCurrentIndex] = currentIndex;
+  const [stateIsPlaying, setStateIsPlaying] = isPlaying;
+  const [statePlaybackStatus, setStatePlaybackStatus] = playbackStatus;
+  const [stateCurrentTime, setStateCurrentTime] = currentTime;
+
+  //token
+  useEffect(() => {
+    if (token) {
+      headers.headers.Authorization = `Bearer ${token}`;
+      axios
+        .get(`${BACKEND_URL}/books`, headers)
+        .then(({ data }) => {
+          setData(data);
+        })
+        .catch((error) => alert('Server error: ', error))
+        .finally(() => setLoading(false));
+    } else {
+      setIsLoggedIn(false);
+      alert('Login token is not good');
+    }
+  }, []);
+
+  //playPauseAudio
+  const handleAudioPlayPause = async () => {
+    if (playbackObject !== null && statePlaybackStatus === null) {
+      const status = await playbackObject
+        .loadAsync(
+          { uri: `${data[stateCurrentIndex].url}.mp3` },
+          { shouldPlay: true }
+        )
+        .catch((e) => {
+          console.log(e);
+        });
+      setStateCurrentAudio(data[stateCurrentIndex]);
+
+      playbackObject.setOnPlaybackStatusUpdate(async () => {
+        if (playbackObject._loaded) {
+          var result = await playbackObject.getStatusAsync();
+          setStateCurrentTime(result.positionMillis);
+        }
+      });
+
+      setStateIsPlaying(true);
+      return setStatePlaybackStatus(status);
+    }
+    // It will pause our audio
+    if (statePlaybackStatus.isPlaying) {
+      const status = await playbackObject.pauseAsync();
+      setStateIsPlaying(false);
+      return setStatePlaybackStatus(status);
+    }
+
+    // It will resume our audio
+    if (!statePlaybackStatus.isPlaying) {
+      const status = await playbackObject.playAsync();
+      setStateIsPlaying(true);
+      return setStatePlaybackStatus(status);
+    }
+  };
 
   return (
     <View style={styles.mainContainer}>
@@ -40,23 +110,23 @@ export const AudioPlayerModal = ({ navigation }) => {
           {stateCurrentAudio != null ? stateCurrentAudio.author : 'loading'}
         </Text>
       </View>
-      <Ionicons
-        name="play-skip-back-outline"
-        style={styles.buttons}
-        size={38}
-      ></Ionicons>
-      <Ionicons name="play-circle" style={styles.buttons} size={38}></Ionicons>
-      <Ionicons
-        name="play-skip-forward-outline"
-        style={styles.buttons}
-        size={38}
-      ></Ionicons>
+
+      <Ionicons 
+      name={stateIsPlaying ? 'ios-pause-circle' : 'ios-play-circle'}
+      style={styles.buttons} 
+      size={45} 
+      onPress={()=>{handleAudioPlayPause()}}></Ionicons>
+
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   mainContainer: {
+    borderColor:'black',
+    borderTopWidth: 2,
+
+    // borderRadius: 10,
     bottom: 0,
     position: 'absolute',
     width: '100%',
@@ -76,7 +146,7 @@ const styles = StyleSheet.create({
   textContainer: {
     padding: 5,
     flexDirection: 'column',
-    width: 100
+    width: 200
   },
   logoImage: {
     width: 50,
