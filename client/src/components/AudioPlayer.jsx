@@ -28,15 +28,9 @@ const { width, height } = Dimensions.get('window');
 export const AudioPlayer = ({ navigation }) => {
   const flatlistRef = useRef(null);
   const scrollX = useRef(new Animated.Value(0)).current;
-  // const [stateCurrentIndex, setStateCurrentIndex] = useState(0);
   const [data, setData] = useState(null);
   const { token } = useContext(AuthContext);
   const [isLoading, setLoading] = useState(true);
-
-
-  // const [statePlaybackStatus, setStatePlaybackStatus] = useState(null);
-
-  // const [stateCurrentTime, setStateCurrentTime] = useState(null);
 
   const { playbackObject, setPlaybackObject } = useContext(AudioContext);
 
@@ -47,11 +41,10 @@ export const AudioPlayer = ({ navigation }) => {
   const [statePlaybackStatus, setStatePlaybackStatus] = playbackStatus;
   const [stateCurrentTime, setStateCurrentTime] = currentTime;
 
-  const { audioDisplay, setAudioDisplay } = useContext(AudioDisplayContext);
+
   const route = useRoute();
   const { selectedId } = route.params;
 
-  //mindent context-be, kulon fuggvenyek a mini-nek, s a nagynak
 
   //token
   useEffect(() => {
@@ -72,7 +65,6 @@ export const AudioPlayer = ({ navigation }) => {
 
   //scrollX
   useEffect(() => {
-    // console.log('CURRENT AUDIO',currentAudio)
     if (playbackObject) {
       var x = 0;
       scrollX.addListener(async ({ value }) => {
@@ -222,7 +214,6 @@ export const AudioPlayer = ({ navigation }) => {
         }
       }
 
-      // console.log('UJ',data[stateCurrentIndex]);
       if (playbackObject._loading == false) {
         const status2 = await playbackObject
         .loadAsync(
@@ -303,7 +294,6 @@ export const AudioPlayer = ({ navigation }) => {
         .catch((e) => {
           console.log('ERROR', e);
         });
-        // console.log(stateCurrentIndex);
       setStateCurrentAudio(data[stateCurrentIndex]);
 
       setStateIsPlaying(true);

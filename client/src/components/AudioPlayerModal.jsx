@@ -20,11 +20,6 @@ import { BACKEND_URL } from '../utils/constants';
 import axios from 'axios';
 
 export const AudioPlayerModal = ({ navigation }) => {
-  // const route = useRoute();
-  // const [statePlaybackStatus, setStatePlaybackStatus] = useState(null);
-  // const [stateIsPlaying, setStateIsPlaying] = useState(false);
-  // const [stateCurrentTime, setStateCurrentTime] = useState();
-
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState(null);
   
@@ -125,20 +120,14 @@ const styles = StyleSheet.create({
   mainContainer: {
     borderColor:'black',
     borderTopWidth: 2,
-
-    // borderRadius: 10,
     bottom: 0,
     position: 'absolute',
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    // borderRadius: 10,
     alignContent: 'center',
     backgroundColor: '#62466D',
     padding: 10
-    // marginVertical: 8,
-    // marginHorizontal: 16,
-    // top: 8
   },
   buttons: {
     color: 'white'
