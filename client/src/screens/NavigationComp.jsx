@@ -22,8 +22,8 @@ import { AuthContext } from '../components/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AudioPlayer from '../components/AudioPlayer';
 import AudioPlayerModal from '../components/AudioPlayerModal';
-import { AudioContext } from '../components/AudioProvider';
-import { AudioDisplayContext } from '../components/AudioDisplayProvider';
+// import { AudioContext } from '../components/AudioProvider';
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -139,7 +139,7 @@ const checkToken = async () => {
 export const Nav = () => {
   const { isLoggedIn, setIsLoggedIn } = React.useContext(LoginContext);
   const { token, setToken } = React.useContext(AuthContext);
-  const { playbackObject } = React.useContext(AudioContext);
+  // const { playbackObject } = React.useContext(AudioContext);
 
   checkToken();
 

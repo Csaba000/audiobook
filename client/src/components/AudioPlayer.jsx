@@ -21,7 +21,7 @@ import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 import { AuthContext } from './AuthProvider';
 import { AudioContext } from './AudioProvider';
 import { CurrentAudio } from './CurrentAudioProvider';
-import { AudioDisplayContext } from './AudioDisplayProvider';
+
 
 const { width, height } = Dimensions.get('window');
 

@@ -6,11 +6,9 @@ import { AudioContext } from '../components/AudioProvider';
 import AudioPlayerModal from '../components/AudioPlayerModal';
 import { CurrentAudio } from '../components/CurrentAudioProvider';
 import AudioPlayer from '../components/AudioPlayer';
-import { AudioDisplayContext } from '../components/AudioDisplayProvider';
 // import { CurrentAudio } from '../components/CurrentAudioProvider';
 
 const FavoritesScreen = () => {
-  const { audioDisplay, setAudioDisplay } = useContext(AudioDisplayContext);
   const { currentAudio, currentIndex } = useContext(CurrentAudio);
   const { playbackObject, setPlaybackObject } = useContext(AudioContext);
 
