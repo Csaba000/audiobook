@@ -9,29 +9,32 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+//import AudioPlayerModal from './AudioPlayerModal';
 
 export const BookListHeader = () => {
   const [query, setQuery] = useState('');
   const [fullData, setFullData] = useState([]);
   return (
-    <View style={styles.headerContainer}>
-      <Ionicons style={styles.searchIcon} name="search" size={20} color="#000" />
-      <TextInput
-        autoCapitalize="none"
-        autoCorrect={false}
-        clearButtonMode="while-editing"
-        value={query}
-        onChangeText={(newText) => setQuery(newText)}
-        placeholder="Search"
-        style={styles.textField}
-      />
-      <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
-      <View>
-        <TouchableOpacity onPress={() => Linking.openURL('https://bit.ly/3Bcr48o')}>
-          <Ionicons name='filter-sharp' style={styles.buyMeACoffe} color={'white'} size={28} />
-        </TouchableOpacity>
+    <>
+      <View style={styles.headerContainer}>
+        <Ionicons style={styles.searchIcon} name="search" size={20} color="#000" />
+        <TextInput
+          autoCapitalize="none"
+          autoCorrect={false}
+          clearButtonMode="while-editing"
+          value={query}
+          onChangeText={(newText) => setQuery(newText)}
+          placeholder="Search"
+          style={styles.textField}
+        />
+        <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
+        <View>
+          <TouchableOpacity onPress={() => Linking.openURL('https://bit.ly/3Bcr48o')}>
+            <Ionicons name="filter-sharp" style={styles.buyMeACoffe} color={'white'} size={28} />
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </>
   );
 };
 
@@ -66,7 +69,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 35,
     height: 35,
-
   },
   buyMeACoffe: {
     bottom: -30,

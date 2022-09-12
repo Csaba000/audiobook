@@ -20,10 +20,11 @@ import { Audio } from 'expo-av';
 import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
 import { AuthContext } from './AuthProvider';
 import { AudioContext } from './AudioProvider';
+import { CurrentAudio } from './CurrentAudioProvider';
 
 const { width, height } = Dimensions.get('window');
 
-const AudioPlayer = ({ navigation }) => {
+export const AudioPlayer = ({ navigation }) => {
   const flatlistRef = useRef(null);
   const scrollX = useRef(new Animated.Value(0)).current;
   const [songIndex, setSongIndex] = useState(0);
@@ -32,6 +33,7 @@ const AudioPlayer = ({ navigation }) => {
   const [isLoading, setLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const { playbackObject, setPlaybackObject } = useContext(AudioContext);
+  const { currentAudio, setCurrentAudio } = useContext(CurrentAudio);
   const [playbackStatus, setPlaybackStatus] = useState(null);
   const [currentTime, setCurrentTime] = useState();
   const route = useRoute();
@@ -196,13 +198,15 @@ const AudioPlayer = ({ navigation }) => {
           }
         }
       }
+
       if (playbackObject._loading == false) {
+        console.log(data[songIndex]);
         const status2 = await playbackObject
           .loadAsync({ uri: `${data[songIndex].url}.mp3` }, { shouldPlay: true })
           .catch((e) => {
             console.log(e);
           });
-
+        setCurrentAudio({ data: data[songIndex], index: songIndex });
         setSongIndex(songId);
         setIsPlaying(true);
         setPlaybackStatus(status2);
@@ -235,6 +239,8 @@ const AudioPlayer = ({ navigation }) => {
           .catch((e) => {
             console.log(e);
           });
+        setCurrentAudio({ data: data[songIndex], index: songIndex });
+
         setSongIndex(songIndex);
         setIsPlaying(true);
         setPlaybackStatus(status2);
@@ -264,6 +270,8 @@ const AudioPlayer = ({ navigation }) => {
         .catch((e) => {
           console.log('ERROR', e);
         });
+      setCurrentAudio({ data: data[songIndex], index: songIndex });
+
       setIsPlaying(true);
       setPlaybackStatus(status2);
     }
@@ -276,6 +284,7 @@ const AudioPlayer = ({ navigation }) => {
         .catch((e) => {
           console.log(e);
         });
+      setCurrentAudio({ data: data[songIndex], index: songIndex });
 
       playbackObject.setOnPlaybackStatusUpdate(async () => {
         if (playbackObject._loaded) {

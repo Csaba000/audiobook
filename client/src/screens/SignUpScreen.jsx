@@ -60,9 +60,14 @@ const SignUpScreen = ({ navigation }) => {
       handleError('Passwoad and confirm password should be same.', 'cpassword');
       isValid = false;
     }
-    if ((inputs.password == inputs.cpassword) && (inputs.cpassword) &&
-      (inputs.email) && (inputs.email.match(/\S+@\S+\.\S+/))
-      && (inputs.password) && (inputs.password.length >= 5)) {
+    if (
+      inputs.password == inputs.cpassword &&
+      inputs.cpassword &&
+      inputs.email &&
+      inputs.email.match(/\S+@\S+\.\S+/) &&
+      inputs.password &&
+      inputs.password.length >= 5
+    ) {
       isValid = true;
     }
 
@@ -79,22 +84,26 @@ const SignUpScreen = ({ navigation }) => {
   };
 
   const sendData = () => {
-    axios.post(`${BACKEND_URL}/users/register`, { email: inputs.email, password: inputs.password })
-      .then(response => console.log(response)).catch(function (error) { alert('Server error: ', error) });
-  }
+    axios
+      .post(`${BACKEND_URL}/users/register`, { email: inputs.email, password: inputs.password })
+      .then((response) => console.log(response))
+      .catch(function (error) {
+        alert('Server error: ', error);
+      });
+  };
 
   const register = () => {
     setLoading(true);
-    setTimeout(() => {
-      try {
-        setLoading(false);
-        // AsyncStorage.setItem('userData', JSON.stringify(inputs));
-        sendData();
-        navigation.navigate('SignInScreen');
-      } catch (error) {
-        Alert.alert('Error', 'Something went wrong');
-      }
-    }, 3000);
+    // setTimeout(() => {
+    try {
+      setLoading(false);
+      // AsyncStorage.setItem('userData', JSON.stringify(inputs));
+      sendData();
+      navigation.navigate('SignInScreen');
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong');
+    }
+    // }, 3000);
   };
 
   return (

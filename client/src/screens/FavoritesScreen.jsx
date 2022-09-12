@@ -3,7 +3,6 @@ import { StyleSheet, Text } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-
 const FavoritesScreen = () => (
   <LinearGradient
     colors={['blue', 'white']}
