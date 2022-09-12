@@ -528,7 +528,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   progressLabelText: {
-    top: 140,
+    top: 130,
     color: 'white'
   },
   musicControls: {

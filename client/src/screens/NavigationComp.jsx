@@ -11,7 +11,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { DarkTheme, NavigationContainer } from '@react-navigation/native';
 import HomeScreen from './HomeScreen';
-import MyBooksScreen from './MyBooksScreen';
 import FavoritesScreen from './FavoritesScreen';
 import ProfilScreen from './ProfileScreen';
 import SignInScreen from './SingInScreen';
@@ -121,13 +120,6 @@ const MyTabs = () => (
       component={CategoriesNavigator}
       options={{
         tabBarIcon: ({ color, size }) => <Ionicons name="list" color={color} size={size} />,
-      }}
-    />
-    <Tab.Screen
-      name="MyBooks"
-      component={MyBooksScreen}
-      options={{
-        tabBarIcon: ({ color, size }) => <Ionicons name="book-outline" color={color} size={size} />,
       }}
     />
     <Tab.Screen
