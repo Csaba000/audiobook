@@ -7,15 +7,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '../utils/constants';
 import { AuthContext } from '../components/AuthProvider';
-
-
-
-const headers = {
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: '',
-  },
-};
+import { headers } from '../utils/constants';
 
 function secondsToHms(d) {
   d = Number(d);

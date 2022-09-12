@@ -16,6 +16,7 @@ import FavoritesScreen from './FavoritesScreen';
 import ProfilScreen from './ProfileScreen';
 import SignInScreen from './SingInScreen';
 import SignUpScreen from './SignUpScreen';
+import CategoriesScreen from './CategoriesScreen';
 import DetailedBook from './DetailedBook';
 import { LoginContext } from '../components/IsLoggedIn';
 import { AuthContext } from '../components/AuthProvider';
@@ -63,65 +64,93 @@ const HomeNavigator = ({ navigation }) => {
   );
 };
 
-const MyTabs = () => {
+const CategoriesNavigator = ({ navigation }) => {
   return (
-    <Tab.Navigator
-      // tabBar={props => <AudioPlayerModal {...props}></AudioPlayerModal>}
-      screenOptions={{
-        tabBarComponent: true,
-        headerShown: false,
-        tabBarHideOnKeyboard: true,
-        tabBarInactiveTintColor: '#62466D',
-        tabBarActiveTintColor: 'white',
-        tabBarShowLabel: false,
-        tabBarStyle: [
-          {
-            backgroundColor: '#23042F',
-            display: 'flex'
-          },
-          null
-        ]
-      }}
-    >
-      <Tab.Screen
-        name="Home"
-        component={HomeNavigator}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" color={color} size={size} />
-          )
-        }}
-      />
-      <Tab.Screen
-        name="MyBooks"
-        component={MyBooksScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="book-outline" color={color} size={size} />
-          )
-        }}
-      />
-      <Tab.Screen
-        name="Favorites"
-        component={FavoritesScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="heart-outline" color={color} size={size} />
-          )
-        }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={ProfilScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" color={color} size={size} />
-          )
-        }}
-      />
-    </Tab.Navigator>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <>
+        <Stack.Screen name="CategoriesScreen" component={CategoriesScreen} />
+        <Stack.Screen
+          name="DetailedBook"
+          component={DetailedBook}
+          options={{
+            headerLeft: () => (
+              <TouchableNativeFeedback
+                onPress={() => {
+                  navigation.navigate('CategoriesScreen');
+                }}
+              >
+                <Ionicons name="arrow-back" size={32} style={{ padding: 10 }} color={'white'} />
+              </TouchableNativeFeedback>
+            ),
+            headerShown: true,
+            title: 'Back',
+            headerStyle: { backgroundColor: '#23042F' },
+          }}
+        />
+      </>
+    </Stack.Navigator>
   );
 };
+
+const MyTabs = () => (
+  <Tab.Navigator
+    screenOptions={{
+      headerShown: false,
+      tabBarHideOnKeyboard: true,
+      tabBarInactiveTintColor: '#62466D',
+      tabBarActiveTintColor: 'white',
+      tabBarShowLabel: false,
+      tabBarStyle: [
+        {
+          backgroundColor: '#23042F',
+          display: 'flex',
+        },
+        null,
+      ],
+    }}
+  >
+    <Tab.Screen
+      name="Home"
+      component={HomeNavigator}
+      options={{
+        tabBarIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} />,
+      }}
+    />
+    <Tab.Screen
+      name="Categories"
+      component={CategoriesNavigator}
+      options={{
+        tabBarIcon: ({ color, size }) => <Ionicons name="list" color={color} size={size} />,
+      }}
+    />
+    <Tab.Screen
+      name="MyBooks"
+      component={MyBooksScreen}
+      options={{
+        tabBarIcon: ({ color, size }) => <Ionicons name="book-outline" color={color} size={size} />,
+      }}
+    />
+    <Tab.Screen
+      name="Favorites"
+      component={FavoritesScreen}
+      options={{
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name="heart-outline" color={color} size={size} />
+        ),
+      }}
+    />
+
+    <Tab.Screen
+      name="Profile"
+      component={ProfilScreen}
+      options={{
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name="person-outline" color={color} size={size} />
+        ),
+      }}
+    />
+  </Tab.Navigator>
+);
 
 const checkToken = async () => {
   const { isLoggedIn, setIsLoggedIn } = React.useContext(LoginContext);

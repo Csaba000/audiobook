@@ -1,21 +1,22 @@
-import {
-  listBooks,
-  listBooksbyId,
-  listBooksbyTitle,
-} from "../service/book.service.js";
+import * as bookService from "../service/book.service.js";
 
 async function bookLister(request, response) {
-  if (!request.query.title) {
-    const book = await listBooks();
+  if (!request.query.title && !request.query.category) {
+    const book = await bookService.listBooks();
     response.json(book);
-  } else {
-    const book = await listBooksbyTitle(request.query.title);
+  }
+  if (request.query.title) {
+    const book = await bookService.listBooksbyTitle(request.query.title);
+    response.json(book);
+  }
+  if (request.query.category) {
+    const book = await bookService.listBooksbyCategory(request.query.category);
     response.json(book);
   }
 }
+
 async function bookListerById(request, response) {
-  const book = await listBooksbyId(request.params.id);
-  response.json(book);
+  response.json(await bookService.listBooksbyId(request.params.id));
 }
 
 export { bookLister, bookListerById };

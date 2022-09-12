@@ -9,7 +9,7 @@ import {
   Dimensions
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import AudioPlayerModal from './AudioPlayerModal';
+//import AudioPlayerModal from './AudioPlayerModal';
 
 export const BookListHeader = () => {
   const [query, setQuery] = useState('');
@@ -17,12 +17,7 @@ export const BookListHeader = () => {
   return (
     <>
       <View style={styles.headerContainer}>
-        <Ionicons
-          style={styles.searchIcon}
-          name="search"
-          size={20}
-          color="#000"
-        />
+        <Ionicons style={styles.searchIcon} name="search" size={20} color="#000" />
         <TextInput
           autoCapitalize="none"
           autoCorrect={false}
@@ -32,20 +27,10 @@ export const BookListHeader = () => {
           placeholder="Search"
           style={styles.textField}
         />
-        <Image
-          source={require('../../assets/images/logo.png')}
-          style={styles.logo}
-        />
+        <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
         <View>
-          <TouchableOpacity
-            onPress={() => Linking.openURL('https://bit.ly/3Bcr48o')}
-          >
-            <Ionicons
-              name="filter-sharp"
-              style={styles.buyMeACoffe}
-              color={'white'}
-              size={28}
-            />
+          <TouchableOpacity onPress={() => Linking.openURL('https://bit.ly/3Bcr48o')}>
+            <Ionicons name="filter-sharp" style={styles.buyMeACoffe} color={'white'} size={28} />
           </TouchableOpacity>
         </View>
       </View>
@@ -83,7 +68,7 @@ const styles = StyleSheet.create({
     bottom: 20,
     position: 'absolute',
     width: 35,
-    height: 35
+    height: 35,
   },
   buyMeACoffe: {
     bottom: -30,
