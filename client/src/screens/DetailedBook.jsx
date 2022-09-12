@@ -1,4 +1,5 @@
 import { useRoute } from '@react-navigation/native';
+import { useContext } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -6,13 +7,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BACKEND_URL } from '../utils/constants';
 import { AuthContext } from '../components/AuthProvider';
-
-const headers = {
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: '',
-  },
-};
+import { headers } from '../utils/constants';
 
 function secondsToHms(d) {
   d = Number(d);
@@ -36,6 +31,7 @@ const DetailedBook = ({ navigation }) => {
 
   useEffect(() => {
     if (token) {
+      //console.log(token);
       headers.headers.Authorization = `Bearer ${token}`;
       axios
         .get(`${BACKEND_URL}/books/${id}`, headers)
@@ -48,7 +44,7 @@ const DetailedBook = ({ navigation }) => {
       console.log('Invalid token');
     }
   }, []);
-  
+
   return (
     <LinearGradient
       colors={['#866B90', '#2101']}
@@ -61,7 +57,10 @@ const DetailedBook = ({ navigation }) => {
           <Image style={styles.logoImage} source={{ uri: `${data.url}.jpg` }}></Image>
           <Text style={styles.titleText}>{data.title}</Text>
           <Text style={styles.authorText}>- {data.author} -</Text>
-          <Text style={styles.descriptionText}>{data.description}{data.description}</Text>
+          <Text style={styles.descriptionText}>
+            {data.description}
+            {data.description}
+          </Text>
           <View style={styles.bottomView}>
             <Text style={styles.durationText}>Duration: {secondsToHms(data.lengthInSeconds)}</Text>
             <Ionicons

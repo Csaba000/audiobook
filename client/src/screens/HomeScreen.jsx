@@ -22,6 +22,8 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (token) {
+      //console.log(token);
+
       headers.headers.Authorization = `Bearer ${token}`;
       axios
         .get(`${BACKEND_URL}/books`, headers)
