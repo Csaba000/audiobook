@@ -1,11 +1,16 @@
-import * as React from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useCallback
+} from 'react';
 import { TouchableNativeFeedback, View, ScrollView, Text } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { DarkTheme, NavigationContainer } from '@react-navigation/native';
 import HomeScreen from './HomeScreen';
-import MyBooksScreen from './MyBooksScreen';
 import FavoritesScreen from './FavoritesScreen';
 import ProfilScreen from './ProfileScreen';
 import SignInScreen from './SingInScreen';
@@ -16,8 +21,9 @@ import { LoginContext } from '../components/IsLoggedIn';
 import { AuthContext } from '../components/AuthProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AudioPlayer from '../components/AudioPlayer';
-import { AudioContext } from '../components/AudioProvider';
 import AudioPlayerModal from '../components/AudioPlayerModal';
+// import { AudioContext } from '../components/AudioProvider';
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -27,6 +33,7 @@ const HomeNavigator = ({ navigation }) => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <>
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
+
         <Stack.Screen name="AudioPlayer" component={AudioPlayer} />
         <Stack.Screen
           name="DetailedBook"
@@ -38,12 +45,17 @@ const HomeNavigator = ({ navigation }) => {
                   navigation.navigate('HomeScreen');
                 }}
               >
-                <Ionicons name="arrow-back" size={32} style={{ padding: 10 }} color={'white'} />
+                <Ionicons
+                  name="arrow-back"
+                  size={32}
+                  style={{ padding: 10 }}
+                  color={'white'}
+                />
               </TouchableNativeFeedback>
             ),
             headerShown: true,
             title: 'Back',
-            headerStyle: { backgroundColor: '#23042F' },
+            headerStyle: { backgroundColor: '#23042F' }
           }}
         />
       </>
@@ -111,13 +123,6 @@ const MyTabs = () => (
       }}
     />
     <Tab.Screen
-      name="MyBooks"
-      component={MyBooksScreen}
-      options={{
-        tabBarIcon: ({ color, size }) => <Ionicons name="book-outline" color={color} size={size} />,
-      }}
-    />
-    <Tab.Screen
       name="Favorites"
       component={FavoritesScreen}
       options={{
@@ -155,17 +160,15 @@ const checkToken = async () => {
 export const Nav = () => {
   const { isLoggedIn, setIsLoggedIn } = React.useContext(LoginContext);
   const { token, setToken } = React.useContext(AuthContext);
-  const { playbackObject } = React.useContext(AudioContext);
+  // const { playbackObject } = React.useContext(AudioContext);
 
   checkToken();
 
   return (
+    // <View>
     <NavigationContainer theme={DarkTheme}>
       {isLoggedIn ? (
-        <>
-          <MyTabs />
-          {playbackObject ? <AudioPlayerModal></AudioPlayerModal> : <View />}
-        </>
+        <MyTabs></MyTabs>
       ) : (
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <>
@@ -176,5 +179,6 @@ export const Nav = () => {
         </Stack.Navigator>
       )}
     </NavigationContainer>
+    // </View>
   );
 };

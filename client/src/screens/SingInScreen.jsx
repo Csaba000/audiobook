@@ -52,14 +52,12 @@ const SignInScreen = ({ navigation }) => {
   };
 
   const sendData = async () => {
-    var resp = await axios
-      .post(`${BACKEND_URL}/users/login`, { email: inputs.email, password: inputs.password })
-      .catch(function (error) {
-        console.log('Server error: ', error);
-      });
+    var resp = await axios.post(`${BACKEND_URL}/users/login`, { email: inputs.email, password: inputs.password }).
+      catch(function (error) { console.log('Server error: ', error) });
 
-    return resp.data;
-  };
+    return resp.data
+
+  }
 
   const handleOnchange = (text, input) => {
     setInputs((prevState) => ({ ...prevState, [input]: text }));
@@ -78,16 +76,19 @@ const SignInScreen = ({ navigation }) => {
       setLoading(true);
 
       setLoading(false);
-      if (tokenInServer != '{}') {
+      if (JSON.stringify(tokenInServer) != '{}') {
         AsyncStorage.setItem('token', tokenInServer['access_token']);
-        setToken(tokenInServer['access_token']);
+        setToken(tokenInServer['access_token'])
         setIsLoggedIn(true);
       } else {
         Alert.alert('Error', 'Invalid Details');
       }
-    } else {
+
+    }
+
+    else {
       let tokenInStorageJSON = JSON.parse(tokenInStorage);
-      setToken(tokenInStorageJSON['access_token']);
+      setToken(tokenInStorageJSON['access_token'])
       AsyncStorage.setItem('token', tokenInStorageJSON['access_token']);
       setIsLoggedIn(true);
     }
@@ -124,12 +125,7 @@ const SignInScreen = ({ navigation }) => {
                 password
               />
 
-              <ModifiedButton
-                title="Log In"
-                onPress={() => {
-                  validate();
-                }}
-              />
+              <ModifiedButton title="Log In" onPress={() => { validate() }} />
 
               <Text
                 style={{
@@ -141,7 +137,7 @@ const SignInScreen = ({ navigation }) => {
                 Don't have an account?
               </Text>
               <Text
-                onPress={() => navigation.navigate('SignUpScreen')}
+                onPress={() => (navigation.navigate('SignUpScreen'))}
                 style={{
                   color: COLORS.white,
                   fontWeight: 'bold',

@@ -31,7 +31,6 @@ const DetailedBook = ({ navigation }) => {
 
   useEffect(() => {
     if (token) {
-      //console.log(token);
       headers.headers.Authorization = `Bearer ${token}`;
       axios
         .get(`${BACKEND_URL}/books/${id}`, headers)
@@ -44,7 +43,7 @@ const DetailedBook = ({ navigation }) => {
       console.log('Invalid token');
     }
   }, []);
-
+  
   return (
     <LinearGradient
       colors={['#866B90', '#2101']}
@@ -57,10 +56,7 @@ const DetailedBook = ({ navigation }) => {
           <Image style={styles.logoImage} source={{ uri: `${data.url}.jpg` }}></Image>
           <Text style={styles.titleText}>{data.title}</Text>
           <Text style={styles.authorText}>- {data.author} -</Text>
-          <Text style={styles.descriptionText}>
-            {data.description}
-            {data.description}
-          </Text>
+          <Text style={styles.descriptionText}>{data.description}{data.description}</Text>
           <View style={styles.bottomView}>
             <Text style={styles.durationText}>Duration: {secondsToHms(data.lengthInSeconds)}</Text>
             <Ionicons

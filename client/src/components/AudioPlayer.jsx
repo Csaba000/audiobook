@@ -7,7 +7,7 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
-  Animated,
+  Animated
 } from 'react-native';
 import { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { useRoute, useFocusEffect } from '@react-navigation/native';
@@ -22,22 +22,29 @@ import { AuthContext } from './AuthProvider';
 import { AudioContext } from './AudioProvider';
 import { CurrentAudio } from './CurrentAudioProvider';
 
+
 const { width, height } = Dimensions.get('window');
 
 export const AudioPlayer = ({ navigation }) => {
   const flatlistRef = useRef(null);
   const scrollX = useRef(new Animated.Value(0)).current;
-  const [songIndex, setSongIndex] = useState(0);
   const [data, setData] = useState(null);
   const { token } = useContext(AuthContext);
   const [isLoading, setLoading] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
+
   const { playbackObject, setPlaybackObject } = useContext(AudioContext);
-  const { currentAudio, setCurrentAudio } = useContext(CurrentAudio);
-  const [playbackStatus, setPlaybackStatus] = useState(null);
-  const [currentTime, setCurrentTime] = useState();
+
+  const { currentAudio, currentIndex, isPlaying, playbackStatus, currentTime } = useContext(CurrentAudio);
+  const [stateCurrentAudio, setStateCurrentAudio] = currentAudio;
+  const [stateCurrentIndex, setStateCurrentIndex] = currentIndex;
+  const [stateIsPlaying, setStateIsPlaying] = isPlaying;
+  const [statePlaybackStatus, setStatePlaybackStatus] = playbackStatus;
+  const [stateCurrentTime, setStateCurrentTime] = currentTime;
+
+
   const route = useRoute();
   const { selectedId } = route.params;
+
 
   //token
   useEffect(() => {
@@ -55,24 +62,27 @@ export const AudioPlayer = ({ navigation }) => {
       alert('Login token is not good');
     }
   }, []);
+
   //scrollX
   useEffect(() => {
     if (playbackObject) {
       var x = 0;
       scrollX.addListener(async ({ value }) => {
+
         const indexNew = Math.round(value / width);
         if (x != indexNew) {
-          setSongIndex(indexNew);
+          setStateCurrentIndex(indexNew);
           swipeAudio(indexNew);
           x = indexNew;
         }
       });
     }
     return () => {
-      scrollX.removeAllListeners();
+      // scrollX.removeAllListeners();
     };
   }, [data, playbackObject]);
 
+  //mas screen
   useEffect(() => {
     const unsubscribe = navigation.addListener('blur', async () => {
       if (playbackObject != null) {
@@ -92,13 +102,14 @@ export const AudioPlayer = ({ navigation }) => {
     useCallback(() => {
       if (data) {
         setTimeout(() => {
-          scrollToIndex();
-          searchIndex(selectedId);
+            scrollToIndex();
+            searchIndex(selectedId);
         }, 100);
       }
     }, [data, selectedId, playbackObject])
   );
 
+  //valami
   useEffect(() => {
     if (data) {
       if (playbackObject != null && playbackObject._loaded == true) {
@@ -112,7 +123,7 @@ export const AudioPlayer = ({ navigation }) => {
           }
         };
         var x = searchIndex(selectedId);
-        if (x == songIndex) {
+        if (x == stateCurrentIndex) {
           return;
         } else {
           status();
@@ -126,18 +137,19 @@ export const AudioPlayer = ({ navigation }) => {
     if (data) {
       if (playbackObject == null) {
         setPlaybackObject(new Audio.Sound());
-        console.log('INITIALIZE');
         Audio.setAudioModeAsync({
           allowsRecordingIOS: false,
           staysActiveInBackground: true,
           playsInSilentModeIOS: true,
           shouldDuckAndroid: true,
-          playThroughEarpieceAndroid: false,
+          playThroughEarpieceAndroid: false
         });
         console.log('initialized');
       }
     }
   }, [data]);
+
+  useEffect(() => {}, [playbackObject]);
 
   function millisToMinutesAndSeconds(millis) {
     var minutes = Math.floor(millis / 60000);
@@ -148,28 +160,31 @@ export const AudioPlayer = ({ navigation }) => {
   const searchIndex = (selectedId) => {
     for (var i = 0; i <= data.length - 1; ++i) {
       if (selectedId == data[i]._id) {
-        setSongIndex(i);
+        setStateCurrentIndex(i);
         return i;
       }
     }
+    return 0;
   };
 
   const scrollToIndex = async () => {
     var x = 0;
+
     var songId = searchIndex(selectedId);
+
     if (playbackObject != null) {
       if (playbackObject._loaded == true) {
         playbackObject.setOnPlaybackStatusUpdate(async () => {
           if (playbackObject._loaded) {
             try {
               var result = await playbackObject.getStatusAsync();
-              setCurrentTime(result.positionMillis);
+              setStateCurrentTime(result.positionMillis);
             } catch (error) {
               console.log(error);
             }
           }
         });
-        setIsPlaying(false);
+        setStateIsPlaying(false);
         try {
           const status = await playbackObject.stopAsync();
           await playbackObject.unloadAsync();
@@ -179,15 +194,15 @@ export const AudioPlayer = ({ navigation }) => {
         }
       }
 
-      if (songIndex == 0) {
+      if (stateCurrentIndex == 0) {
         playbackObject.setOnPlaybackStatusUpdate(async () => {
           if (playbackObject._loaded) {
             var result = await playbackObject.getStatusAsync();
-            setCurrentTime(result.positionMillis);
+            setStateCurrentTime(result.positionMillis);
           }
         });
 
-        setIsPlaying(false);
+        setStateIsPlaying(false);
         if (playbackObject._loaded == true) {
           try {
             const status = await playbackObject.stopAsync();
@@ -200,16 +215,19 @@ export const AudioPlayer = ({ navigation }) => {
       }
 
       if (playbackObject._loading == false) {
-        console.log(data[songIndex]);
         const status2 = await playbackObject
-          .loadAsync({ uri: `${data[songIndex].url}.mp3` }, { shouldPlay: true })
-          .catch((e) => {
-            console.log(e);
-          });
-        setCurrentAudio({ data: data[songIndex], index: songIndex });
-        setSongIndex(songId);
-        setIsPlaying(true);
-        setPlaybackStatus(status2);
+        .loadAsync(
+            { uri: `${data[stateCurrentIndex].url}.mp3` },
+            { shouldPlay: true }
+            )
+            .catch((e) => {
+              console.log(e);
+            });
+        setStateCurrentAudio(data[stateCurrentIndex]);
+        setStateCurrentIndex(songId);
+        setStateIsPlaying(true);
+        setStatePlaybackStatus(status2);
+
         flatlistRef.current.scrollToIndex({ animated: false, index: songId });
       }
     }
@@ -221,7 +239,7 @@ export const AudioPlayer = ({ navigation }) => {
         playbackObject.setOnPlaybackStatusUpdate(async () => {
           if (playbackObject._loaded) {
             var result = await playbackObject.getStatusAsync();
-            setCurrentTime(result.positionMillis);
+            setStateCurrentTime(result.positionMillis);
           }
         });
         try {
@@ -231,25 +249,28 @@ export const AudioPlayer = ({ navigation }) => {
         } catch (error) {
           console.log('ERROR: ', error);
         }
-        setIsPlaying(false);
+        setStateIsPlaying(false);
       }
       if (playbackObject._loading == false) {
         const status2 = await playbackObject
-          .loadAsync({ uri: `${data[songIndex].url}.mp3` }, { shouldPlay: true })
+          .loadAsync(
+            { uri: `${data[songIndex].url}.mp3` },
+            { shouldPlay: true }
+          )
           .catch((e) => {
             console.log(e);
           });
-        setCurrentAudio({ data: data[songIndex], index: songIndex });
+        setStateCurrentAudio(data[songIndex]);
 
-        setSongIndex(songIndex);
-        setIsPlaying(true);
-        setPlaybackStatus(status2);
+        setStateCurrentIndex(songIndex);
+        setStateIsPlaying(true);
+        setStatePlaybackStatus(status2);
       }
     }
   };
 
   const changeAudio = async (songIndexPara) => {
-    var oldIndex = songIndex;
+    var oldIndex = stateCurrentIndex;
 
     if (oldIndex != songIndexPara) {
       oldIndex = songIndexPara;
@@ -259,85 +280,92 @@ export const AudioPlayer = ({ navigation }) => {
         try {
           await playbackObject.unloadAsync();
           console.log('Audio has been unloaded');
-          setIsPlaying(false);
-          setPlaybackStatus(status);
+          setStateIsPlaying(false);
+          setStatePlaybackStatus(status);
         } catch (error) {
           console.log('ERROR: ', error);
         }
       }
       const status2 = await playbackObject
-        .loadAsync({ uri: `${data[songIndexPara].url}.mp3` }, { shouldPlay: true })
+        .loadAsync(
+          { uri: `${data[songIndexPara].url}.mp3` },
+          { shouldPlay: true }
+        )
         .catch((e) => {
           console.log('ERROR', e);
         });
-      setCurrentAudio({ data: data[songIndex], index: songIndex });
+      setStateCurrentAudio(data[stateCurrentIndex]);
 
-      setIsPlaying(true);
-      setPlaybackStatus(status2);
+      setStateIsPlaying(true);
+      setStatePlaybackStatus(status2);
     }
   };
 
   const handleAudioPlayPause = async () => {
-    if (playbackObject !== null && playbackStatus === null) {
+    console.log(data[stateCurrentIndex]);
+    if (playbackObject !== null && statePlaybackStatus === null) {
       const status = await playbackObject
-        .loadAsync({ uri: `${data[songIndex].url}.mp3` }, { shouldPlay: true })
+        .loadAsync(
+          { uri: `${data[stateCurrentIndex].url}.mp3` },
+          { shouldPlay: true }
+        )
         .catch((e) => {
           console.log(e);
         });
-      setCurrentAudio({ data: data[songIndex], index: songIndex });
+      setStateCurrentAudio(data[stateCurrentIndex]);
 
       playbackObject.setOnPlaybackStatusUpdate(async () => {
         if (playbackObject._loaded) {
           var result = await playbackObject.getStatusAsync();
-          setCurrentTime(result.positionMillis);
+          setStateCurrentTime(result.positionMillis);
         }
       });
 
-      setIsPlaying(true);
-      return setPlaybackStatus(status);
+      setStateIsPlaying(true);
+      return setStatePlaybackStatus(status);
     }
     // It will pause our audio
-    if (playbackStatus.isPlaying) {
+    if (statePlaybackStatus.isPlaying) {
       const status = await playbackObject.pauseAsync();
-      setIsPlaying(false);
-      return setPlaybackStatus(status);
+      setStateIsPlaying(false);
+      return setStatePlaybackStatus(status);
     }
 
     // It will resume our audio
-    if (!playbackStatus.isPlaying) {
+    if (!statePlaybackStatus.isPlaying) {
       const status = await playbackObject.playAsync();
-      setIsPlaying(true);
-      return setPlaybackStatus(status);
+      setStateIsPlaying(true);
+      return setStatePlaybackStatus(status);
     }
   };
 
   const skipToNext = async () => {
-    if (songIndex > data.length - 2) {
+    if (stateCurrentIndex > data.length - 2) {
       return;
     }
-    setCurrentTime(0);
+    setStateCurrentTime(0);
 
-    var nextSongIndex = songIndex + 1;
-    setSongIndex(nextSongIndex);
+    var nextSongIndex = stateCurrentIndex + 1;
+    setStateCurrentIndex(nextSongIndex);
 
     await flatlistRef.current.scrollToOffset({
-      offset: nextSongIndex * width,
+      offset: nextSongIndex * width
     });
 
     changeAudio(nextSongIndex);
   };
 
   const skipToPrevious = async () => {
-    if (songIndex - 1 < 0) {
+    if (stateCurrentIndex - 1 < 0) {
       return;
     }
-    setCurrentTime(0);
+    setStateCurrentTime(0);
 
-    var previousSongIndex = songIndex - 1;
-    setSongIndex(previousSongIndex);
+    var previousSongIndex = stateCurrentIndex - 1;
+    setStateCurrentIndex(previousSongIndex);
 
     flatlistRef.current.scrollToOffset({
-      offset: previousSongIndex * width,
+      offset: previousSongIndex * width
     });
 
     changeAudio(previousSongIndex);
@@ -347,7 +375,10 @@ export const AudioPlayer = ({ navigation }) => {
     return (
       <Animated.View style={styles.flatListContainer}>
         <View style={styles.wrapImage}>
-          <Image style={styles.logoImage} source={{ uri: `${item.url}.jpg` }}></Image>
+          <Image
+            style={styles.logoImage}
+            source={{ uri: `${item.url}.jpg` }}
+          ></Image>
         </View>
 
         <View style={{ top: 40 }}>
@@ -357,11 +388,11 @@ export const AudioPlayer = ({ navigation }) => {
 
         <View style={styles.progressLabelContainer}>
           <Text style={styles.progressLabelText}>
-            {currentTime ? millisToMinutesAndSeconds(currentTime) : '0:00'}
+            {stateCurrentTime ? millisToMinutesAndSeconds(stateCurrentTime) : '0:00'}
           </Text>
           <Text style={styles.progressLabelText}>
-            {playbackStatus
-              ? millisToMinutesAndSeconds(playbackStatus.durationMillis)
+            {statePlaybackStatus
+              ? millisToMinutesAndSeconds(statePlaybackStatus.durationMillis)
               : 'loading...'}
           </Text>
         </View>
@@ -387,9 +418,9 @@ export const AudioPlayer = ({ navigation }) => {
             [
               {
                 nativeEvent: {
-                  contentOffset: { x: scrollX },
-                },
-              },
+                  contentOffset: { x: scrollX }
+                }
+              }
             ],
             { useNativeDriver: false }
           )}
@@ -398,9 +429,9 @@ export const AudioPlayer = ({ navigation }) => {
         <View>
           <Slider
             style={styles.sliderContainer}
-            value={currentTime}
+            value={stateCurrentTime}
             minimumValue={0}
-            maximumValue={playbackStatus ? playbackStatus.durationMillis : 0}
+            maximumValue={statePlaybackStatus ? statePlaybackStatus.durationMillis : 0}
             thumbTintColor="white"
             minimumTrackTintColor="#FFD369"
             maximumTrackTintColor="#FFF"
@@ -410,7 +441,7 @@ export const AudioPlayer = ({ navigation }) => {
             onSlidingComplete={async (value) => {
               if (
                 millisToMinutesAndSeconds(value) ==
-                millisToMinutesAndSeconds(playbackStatus.durationMillis)
+                millisToMinutesAndSeconds(statePlaybackStatus.durationMillis)
               ) {
                 skipToNext();
               }
@@ -435,7 +466,7 @@ export const AudioPlayer = ({ navigation }) => {
 
           <TouchableOpacity>
             <Ionicons
-              name={isPlaying ? 'ios-pause-circle' : 'ios-play-circle'}
+              name={stateIsPlaying ? 'ios-pause-circle' : 'ios-play-circle'}
               size={60}
               color="white"
               onPress={() => handleAudioPlayPause()}
@@ -458,71 +489,109 @@ export const AudioPlayer = ({ navigation }) => {
     </SafeAreaView>
   );
 };
+
 export default AudioPlayer;
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#391B45',
+    backgroundColor: '#391B45'
   },
   wrapImage: {
     width: 300,
     height: 340,
     elevation: 10,
-    marginBottom: 25,
+    marginBottom: 25
   },
   flatListContainer: {
     width: width,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   logoImage: {
     marginTop: 50,
     width: '100%',
     height: '100%',
-    borderRadius: 15,
+    borderRadius: 15
   },
   sliderContainer: {
     width: 350,
     height: 40,
     marginTop: 25,
     bottom: 85,
-    flexDirection: 'row',
+    flexDirection: 'row'
   },
   progressLabelContainer: {
     bottom: 70,
     width: 340,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   progressLabelText: {
-    top: 140,
-    color: 'white',
+    top: 130,
+    color: 'white'
   },
   musicControls: {
     flexDirection: 'row',
     width: '60%',
     marginTop: 15,
     bottom: 65,
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   title: {
     marginBottom: 80,
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',
-    color: '#EEEEEE',
+    color: '#EEEEEE'
   },
   author: {
     bottom: 70,
     color: '#d6cece',
     fontSize: 16,
     fontWeight: '300',
-    textAlign: 'center',
+    textAlign: 'center'
   },
   mainContainer: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center'
+  }
+});
+
+const styles2 = StyleSheet.create({
+  mainContainer: {
+    bottom: 0,
+    position: 'absolute',
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    // borderRadius: 10,
+    alignContent: 'center',
+    backgroundColor: '#62466D',
+    padding: 10
+    // marginVertical: 8,
+    // marginHorizontal: 16,
+    // top: 8
   },
+  buttons: {
+    color: 'white'
+  },
+  textContainer: {
+    padding: 5,
+    flexDirection: 'column',
+    width: 100
+  },
+  logoImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 100
+  },
+  title: {
+    fontWeight: 'bold',
+    color: 'white'
+  },
+  author: {
+    color: 'white'
+  }
 });

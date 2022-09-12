@@ -1,9 +1,144 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Image, TouchableNativeFeedback, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
+import { headers } from '../utils/constants';
+import { LoginContext } from './IsLoggedIn';
+import { BACKEND_URL } from '../utils/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import FavoritesScreen from '../screens/FavoritesScreen';
+import { useFocusEffect } from '@react-navigation/native';
 
-export const BookItem = ({ title, description, url, author, navigation, lengthInSeconds, id }) => {
+export const BookItem = ({
+  title,
+  description,
+  url,
+  author,
+  navigation,
+  lengthInSeconds,
+  id,
+  token,
+  favorites,
+}) => {
   const [iconName, setIconName] = useState('heart-outline');
+  const [isLoading, setLoading] = useState(true);
+  const [email, setEmail] = useState('');
+  const [fav, setFav] = useState([]);
+  const book = {
+    title,
+    description,
+    url,
+    author,
+    lengthInSeconds,
+    id,
+  };
+
+  //console.log(favorites);
+
+  useEffect(() => {
+    readData();
+    isFav();
+  }, []);
+
+  const saveData = async () => {
+    try {
+      await AsyncStorage.setItem('fav', JSON.stringify(book));
+      //alert('Data successfully saved');
+    } catch (e) {
+      alert('Failed to save the data to the storage');
+    }
+  };
+
+  const readData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('fav');
+
+      if (value !== null) {
+        setFav(value);
+        // console.log(value);
+      }
+    } catch (e) {
+      alert('Failed to fetch the input from storage');
+    }
+  };
+
+  const removeData = async (item) => {
+    try {
+      await AsyncStorage.removeItem('fav');
+      //alert('Data successfully removed');
+    } catch (e) {
+      alert('Failed to remove data from the storage');
+    }
+  };
+
+  const removeFromFavs = () => {
+    if (token) {
+      headers.headers.Authorization = `Bearer ${token}`;
+
+      axios
+        .post(`${BACKEND_URL}/users/removeFromFavorites`, { email, id }, headers)
+        .then((resp) => {
+          //removeData(book);
+        })
+        .catch(function (error) {
+          console.log('Server error: ', error);
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setIsLoggedIn(false);
+      alert('Login token is not good');
+    }
+  };
+
+  const addToFavs = () => {
+    if (token) {
+      headers.headers.Authorization = `Bearer ${token}`;
+
+      axios
+        .post(`${BACKEND_URL}/users/favorites`, { email, id }, headers)
+        .then((resp) => {
+          //saveData(book);
+        })
+        .catch(function (error) {
+          console.log('Server error: ', error);
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setIsLoggedIn(false);
+      alert('Login token is not good');
+    }
+  };
+
+  const getEmail = () => {
+    if (token) {
+      headers.headers.Authorization = `Bearer ${token}`;
+
+      axios
+        .post(`${BACKEND_URL}/users/currentUser`, { email }, headers)
+        .then((resp) => {
+          setEmail(resp.data);
+        })
+        .catch(function (error) {
+          console.log('Server error: ', error);
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setIsLoggedIn(false);
+      alert('Login token is not good');
+    }
+  };
+
+  const isFav = () => {
+    favorites.some(async (elem) => {
+      if (elem._id === id) {
+        //console.log('yay');
+        setIconName('heart-sharp');
+      } else {
+        //console.log('nay');
+        setIconName('heart-outline');
+      }
+    });
+  };
 
   return (
     <TouchableNativeFeedback
@@ -25,9 +160,16 @@ export const BookItem = ({ title, description, url, author, navigation, lengthIn
             onPress={() => {
               if (iconName == 'heart-outline') {
                 setIconName('heart-sharp');
+                getEmail();
+                addToFavs();
+                saveData();
+                //readData();
               }
               if (iconName == 'heart-sharp') {
                 setIconName('heart-outline');
+                removeFromFavs();
+                removeData();
+                //readData();
               }
             }}
           />
@@ -70,7 +212,6 @@ const styles = StyleSheet.create({
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
-    top: 8,
   },
   title: {
     marginRight: 25,

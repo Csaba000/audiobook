@@ -25,6 +25,9 @@ import { SearchBar } from 'react-native-screens';
 import COLORS from '../constants/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { filter } from 'lodash';
+import { AudioContext } from '../components/AudioProvider';
+import AudioPlayerModal from '../components/AudioPlayerModal';
+import { CurrentAudio } from '../components/CurrentAudioProvider';
 
 const CategoriesScreen = ({ navigation }) => {
   const [myData, setMyData] = useState([]);
@@ -32,6 +35,8 @@ const CategoriesScreen = ({ navigation }) => {
   const [groupedBooks, setGroupedBooks] = useState([]);
   const [filteredBooks, setFilteredBooks] = useState([]);
   const [search, setSearch] = useState('');
+  const { currentAudio, currentIndex } = useContext(CurrentAudio);
+  const { playbackObject, setPlaybackObject } = useContext(AudioContext);
 
   const { token, setToken } = useContext(AuthContext);
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
@@ -182,6 +187,7 @@ const CategoriesScreen = ({ navigation }) => {
               autoComplete="off"
             />
           </View>
+          
         </View>
         {search ? (
           <FlatList
@@ -252,6 +258,11 @@ const CategoriesScreen = ({ navigation }) => {
           ></SectionList>
         )}
       </SafeAreaView>
+      {playbackObject != null ? (
+      <AudioPlayerModal></AudioPlayerModal>
+    ) : (
+      <View></View>
+    )}
     </View>
   );
 };

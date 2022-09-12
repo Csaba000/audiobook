@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Linking,
   StyleSheet,
-  Dimensions,
+  Dimensions
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 //import AudioPlayerModal from './AudioPlayerModal';
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     borderBottomEndRadius: 10,
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   textField: {
     left: dimension / 4.85,
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     height: 30,
     bottom: 20,
     position: 'absolute',
-    paddingLeft: 10,
+    paddingLeft: 10
   },
   logo: {
     left: dimension / 22,
@@ -73,12 +73,12 @@ const styles = StyleSheet.create({
   buyMeACoffe: {
     bottom: -30,
     left: dimension / 2.6,
-    position: 'absolute',
+    position: 'absolute'
   },
   searchIcon: {
     left: dimension / 6.7,
     bottom: 23,
     position: 'absolute',
-    color: 'white',
-  },
+    color: 'white'
+  }
 });
