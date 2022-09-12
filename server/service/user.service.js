@@ -11,22 +11,23 @@ async function listUsersbyId(id) {
   return userSchema.findById(id);
 }
 
-async function register(email, password) {
-  if (isEmailValid(email)) {
-    try {
-      if (await userSchema.findOne({ email: email })) {
-        throw new Error("User with this email already exists!");
-      }
-
+async function register(email, password, username) {
+  try {
+    const userWithSameEmail = await userSchema.findOne({ email: email });
+    if (userWithSameEmail) {
+      throw new Error("User with this email already exists!");
+    } else {
       await bcrypt.hash(password, 10).then((hashedPassword) => {
-        return new userSchema({
+        const user = new userSchema({
           email: email,
           password: hashedPassword,
-        }).save();
+        });
+
+        return user.save();
       });
-    } catch (e) {
-      console.error(`Something went wrong: ${e}`);
     }
+  } catch (e) {
+    console.error('Something went wrong: ${e}');
   }
 }
 
