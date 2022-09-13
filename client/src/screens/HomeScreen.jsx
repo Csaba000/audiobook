@@ -36,7 +36,7 @@ const HomeScreen = ({ navigation }) => {
   const [search, setSearch] = useState('');
   const { token, setToken } = useContext(AuthContext);
   const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
-  
+
   const { playbackObject, setPlaybackObject } = useContext(AudioContext);
   const [favs, setFavs] = useState([]);
   let favorites = [];
@@ -58,7 +58,6 @@ const HomeScreen = ({ navigation }) => {
         .then((resp) => {
           favorites = resp.data;
           setFavs(favorites);
-          //console.log(favorites);
         })
         .then(saveFavs())
         .catch(function (error) {
@@ -70,61 +69,23 @@ const HomeScreen = ({ navigation }) => {
       alert('Login token is not good');
     }
 
-    // if (token) {
-    //   headers.headers.Authorization = `Bearer ${token}`;
 
-    //   axios
-    //     .post(`${BACKEND_URL}/users/listFavorites`, {}, headers)
-    //     .then((resp) => {
-    //       favorites = resp.data;
-    //       setFavs(favorites);
-    //     })
-    //     .then(saveFavs())
-    //     .catch(function (error) {
-    //       console.log('Server error: ', error);
-    //     })
-    //     .finally(() => setLoading(false));
-    // } else {
-    //   setIsLoggedIn(false);
-    //   alert('Login token is not good');
-    // }
   }, []);
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     if (token) {
-  //       headers.headers.Authorization = `Bearer ${token}`;
 
-  //       axios
-  //         .post(`${BACKEND_URL}/users/listFavorites`, {}, headers)
-  //         .then((resp) => {
-  //           favorites = resp.data;
-  //           setFavs(favorites);
-  //         })
-  //         .then(saveFavs())
-  //         .catch(function (error) {
-  //           console.log('Server error: ', error);
-  //         })
-  //         .finally(() => setLoading(false));
-  //     } else {
-  //       setIsLoggedIn(false);
-  //       alert('Login token is not good');
-  //     }
-  //   }, [])
-  // );
 
   const saveFavs = async () => {
-    //console.log(favs);
+
     const book = data.map((Book) => {
       const { _id, category, title, author, url, description, lengthInSeconds } = Book;
 
-      //console.log(favs);
+
       favs.some(async (elem) => {
         if (elem._id === _id) {
           setIsLiked(true);
           try {
             await AsyncStorage.setItem('fav', JSON.stringify(Book));
-            //alert('Data successfully saved');
+
           } catch (e) {
             alert('Failed to save the data to the storage');
           }
@@ -133,7 +94,7 @@ const HomeScreen = ({ navigation }) => {
         }
       });
     });
-    //console.log(isLiked);
+
   };
 
   const searchFilterFunction = (text) => {
@@ -149,7 +110,7 @@ const HomeScreen = ({ navigation }) => {
         lengthInSeconds,
       };
     });
-    //console.log(bookData);
+
     if (text.trim().length !== 0) {
       const newData = bookData.filter(function (item) {
         const itemData = item.title
@@ -158,15 +119,14 @@ const HomeScreen = ({ navigation }) => {
         const textData = text.toUpperCase();
         return itemData.indexOf(textData) > -1;
       });
-      //console.log(newData);
+
       setFilteredBooks(newData);
     }
-    //console.log(filteredBooks);
+
     setSearch(text);
   };
 
   const renderItem = ({ item }) => {
-    // console.log(favs);
     return (
       <BookItem
         title={item.title}
@@ -244,10 +204,10 @@ const HomeScreen = ({ navigation }) => {
           ></FlatList>
         )}
         {playbackObject != null ? (
-        <AudioPlayerModal></AudioPlayerModal>
-      ) : (
-        <View></View>
-      )}
+          <AudioPlayerModal></AudioPlayerModal>
+        ) : (
+          <View></View>
+        )}
       </SafeAreaView>
     </View>
 

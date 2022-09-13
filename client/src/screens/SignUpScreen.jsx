@@ -88,7 +88,6 @@ const SignUpScreen = ({ navigation }) => {
     setTimeout(() => {
       try {
         setLoading(false);
-        // AsyncStorage.setItem('userData', JSON.stringify(inputs));
         sendData();
         navigation.navigate('SignInScreen');
       } catch (error) {

@@ -46,7 +46,6 @@ const SignInScreen = ({ navigation }) => {
       isValid = false;
     }
     if (isValid) {
-      // setIsLoggedIn(true);
       login();
     }
   };

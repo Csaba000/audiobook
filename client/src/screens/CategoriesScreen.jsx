@@ -50,21 +50,14 @@ const CategoriesScreen = ({ navigation }) => {
         .then((response) => {
           setMyData(response.data);
           const books = response.data;
-          //console.log(books);
           const byCategory = _(books)
             .groupBy((book) => book.category)
             .map((value, key) => ({ category: key, data: value }))
             .value();
 
-          // setFilteredBooks(null);
-          // console.log(filteredBooks);
-
-          // setGroupedBooks([byCategory]);
           setGroupedBooks(byCategory);
           setMyData(books);
 
-          //console.log(myData);
-          //console.log(groupedBooks);
         })
         .catch((error) => console.error(error))
         .finally(() => setLoading(false));
@@ -82,7 +75,6 @@ const CategoriesScreen = ({ navigation }) => {
         url,
       };
     });
-    //console.log(bookData);
     if (text.trim().length !== 0) {
       const newData = bookData.filter(function (item) {
         const itemData = item.title
@@ -91,40 +83,12 @@ const CategoriesScreen = ({ navigation }) => {
         const textData = text.toUpperCase();
         return itemData.indexOf(textData) > -1;
       });
-      //console.log(newData);
       setFilteredBooks(newData);
     }
-    //console.log(filteredBooks);
+
     setSearch(text);
   };
 
-  // const Search = ({}) => {
-  //   return (
-  //     <View style={{ marginBottom: -10, marginTop: 30, margin: 5 }}>
-  //       <View
-  //         style={[
-  //           styles.inputContainer,
-  //           {
-  //             alignItems: 'center',
-  //           },
-  //         ]}
-  //       >
-  //         <Ionicons name="search" style={{ color: COLORS.box, fontSize: 22, marginRight: 10 }} />
-  //         <TextInput
-  //           autoCorrect={false}
-  //           //autoCapitalize="none"
-  //           // clearButtonMode="always"
-  //           style={{ color: COLORS.white, flex: 1 }}
-  //           placeholderTextColor={COLORS.grey}
-  //           placeholder="Search..."
-  //           onChangeText={(text) => searchFilterFunction(text)}
-  //           value={search}
-  //           defaultValue={null}
-  //         />
-  //       </View>
-  //     </View>
-  //   );
-  // };
 
   const BookItem = ({ item }) => {
     return (
@@ -177,7 +141,6 @@ const CategoriesScreen = ({ navigation }) => {
             <TextInput
               autoCorrect={false}
               autoCapitalize="none"
-              //clearButtonMode="always"
               style={{ color: COLORS.white, flex: 1 }}
               placeholderTextColor={COLORS.grey}
               placeholder="Search..."
@@ -208,34 +171,6 @@ const CategoriesScreen = ({ navigation }) => {
             stickySectionHeadersEnabled={false}
             style={styles.sectionsStyle}
             sections={groupedBooks}
-            // ListHeaderComponent={
-            //   <View style={{ marginBottom: 3 }}>
-            //     <View
-            //       style={[
-            //         styles.inputContainer,
-            //         {
-            //           alignItems: 'center',
-            //         },
-            //       ]}
-            //     >
-            //       <Ionicons
-            //         name="search"
-            //         style={{ color: COLORS.box, fontSize: 22, marginRight: 10 }}
-            //       />
-            //       <TextInput
-            //         autoCorrect={false}
-            //         //autoCapitalize="none"
-            //         // clearButtonMode="always"
-            //         style={{ color: COLORS.white, flex: 1 }}
-            //         placeholderTextColor={COLORS.grey}
-            //         placeholder="Search..."
-            //         onChangeText={(text) => searchFilterFunction(text)}
-            //         value={search}
-            //         defaultValue={null}
-            //       />
-            //     </View>
-            //   </View>
-            // }
             removeClippedSubviews={false}
             renderSectionHeader={({ section }) => (
               <>

@@ -44,10 +44,10 @@ const FavoritesScreen = ({ navigation }) => {
         axios
           .post(`${BACKEND_URL}/users/listFavorites`, {}, headers)
           .then((resp) => {
-            //console.log(resp.data);
+
             favorites = resp.data;
             setData(favorites);
-            //console.log(data);
+
           })
           .catch(function (error) {
             console.log('Server error: ', error);
@@ -121,7 +121,6 @@ const FavoritesScreen = ({ navigation }) => {
           ></FlatList>
         ) : (
           <View>
-            {/* <Image source={require('../assets/nofavs.png')} style={styles.nofavs} /> */}
             <Text style={styles.nofavsText}>Like a book and see it here!</Text>
           </View>
         )}

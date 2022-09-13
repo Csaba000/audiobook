@@ -30,9 +30,6 @@ const ProfilScreen = () => {
         .post(`${BACKEND_URL}/users/currentUser`, { email }, headers)
         .then((resp) => {
           setEmail(resp.data);
-          //console.log(resp);
-          // setChangedEmail(email);
-          //console.log(email);
         })
         .catch(function (error) {
           console.log('Server error: ', error);
@@ -49,7 +46,6 @@ const ProfilScreen = () => {
     let isValid = true;
     if (reg.test(text) === false) {
       isValid = false;
-      // setChangedEmail(text);
       handleError('Enter valid email', 'email');
       setIsWrong(true);
     } else {
@@ -69,17 +65,6 @@ const ProfilScreen = () => {
   };
 
   const sendData = (text) => {
-    //console.log(text);
-    // if (isChanging === false) {
-    //   axios
-    //     .post(`${BACKEND_URL}/users/emailChange`, { email, password, newEmail: text }, headers)
-    //     .then((response) => console.log(response))
-    //     .catch(function (error) {
-    //       alert('Server error: ', error);
-    //     });
-    // } else {
-    //   alert('Finish editing!');
-    // }
   };
 
   const changeSettings = (text) => {
@@ -101,7 +86,7 @@ const ProfilScreen = () => {
         <Ionicons
           name="settings"
           style={{ fontSize: 30, margin: 10, marginRight: 20 }}
-          //onPress={changeSettings} //necessary if you want to change textinput data
+
           color={isChanging ? 'firebrick' : COLORS.box}
         />
         <View
@@ -109,7 +94,7 @@ const ProfilScreen = () => {
             styles.inputContainer,
             {
               alignItems: 'center',
-              //borderColor: isChanging ? (isWrong ? COLORS.red : COLORS.box) : COLORS.box,
+
             },
           ]}
         >

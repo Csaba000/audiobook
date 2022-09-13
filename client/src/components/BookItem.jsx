@@ -33,7 +33,6 @@ export const BookItem = ({
     id,
   };
 
-  //console.log(favorites);
 
   useEffect(() => {
     readData();
@@ -43,7 +42,6 @@ export const BookItem = ({
   const saveData = async () => {
     try {
       await AsyncStorage.setItem('fav', JSON.stringify(book));
-      //alert('Data successfully saved');
     } catch (e) {
       alert('Failed to save the data to the storage');
     }
@@ -55,7 +53,6 @@ export const BookItem = ({
 
       if (value !== null) {
         setFav(value);
-        // console.log(value);
       }
     } catch (e) {
       alert('Failed to fetch the input from storage');
@@ -65,7 +62,6 @@ export const BookItem = ({
   const removeData = async (item) => {
     try {
       await AsyncStorage.removeItem('fav');
-      //alert('Data successfully removed');
     } catch (e) {
       alert('Failed to remove data from the storage');
     }
@@ -78,7 +74,6 @@ export const BookItem = ({
       axios
         .post(`${BACKEND_URL}/users/removeFromFavorites`, { email, id }, headers)
         .then((resp) => {
-          //removeData(book);
         })
         .catch(function (error) {
           console.log('Server error: ', error);
@@ -97,7 +92,6 @@ export const BookItem = ({
       axios
         .post(`${BACKEND_URL}/users/favorites`, { email, id }, headers)
         .then((resp) => {
-          //saveData(book);
         })
         .catch(function (error) {
           console.log('Server error: ', error);
@@ -131,10 +125,8 @@ export const BookItem = ({
   const isFav = () => {
     favorites.some(async (elem) => {
       if (elem._id === id) {
-        //console.log('yay');
         setIconName('heart-sharp');
       } else {
-        //console.log('nay');
         setIconName('heart-outline');
       }
     });
@@ -163,13 +155,13 @@ export const BookItem = ({
                 getEmail();
                 addToFavs();
                 saveData();
-                //readData();
+
               }
               if (iconName == 'heart-sharp') {
                 setIconName('heart-outline');
                 removeFromFavs();
                 removeData();
-                //readData();
+
               }
             }}
           />

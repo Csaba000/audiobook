@@ -78,7 +78,6 @@ export const AudioPlayer = ({ navigation }) => {
       });
     }
     return () => {
-      // scrollX.removeAllListeners();
     };
   }, [data, playbackObject]);
 
